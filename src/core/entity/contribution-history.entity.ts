@@ -1,14 +1,14 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Organization } from "./organization.entity";
-import { User } from "./user.entity";
+import { OrganizationEntity } from "./organization.entity";
+import { UserEntity } from "./user.entity";
 import { BaseEntity } from "src/common/database/BaseEntity";
 
 @Entity()
-export class ContributionHistory extends BaseEntity {
+export class ContributionHistoryEntity extends BaseEntity {
 
-    @ManyToOne(() => Organization)
+    @ManyToOne(() => OrganizationEntity)
     @JoinColumn({ name: 'organization_id' })
-    organization: Organization;
+    organization: OrganizationEntity;
 
     @Column({ type: 'enum', enum: ['basic', 'premium', 'enterprise'] })
     plan_type: string;
@@ -25,6 +25,6 @@ export class ContributionHistory extends BaseEntity {
     @Column({ type: 'enum', enum: ['active', 'expired', 'canceled'], default: 'active' })
     status: string;
 
-    @ManyToOne(() => User, (user) => user.id)
-    user: User;
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    user: UserEntity;
 }

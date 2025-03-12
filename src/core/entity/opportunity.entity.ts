@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Organization } from './organization.entity';
+import { OrganizationEntity } from './organization.entity';
 import { BaseEntity } from 'src/common/database/BaseEntity';
 
 @Entity()
-export class Opportunity extends BaseEntity {
+export class OpportunityEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -13,6 +13,6 @@ export class Opportunity extends BaseEntity {
   @Column({ type: 'text' })
   description: string;
 
-  @ManyToOne(() => Organization, (organization) => organization.opportunities, { onDelete: 'CASCADE' })
-  organization: Organization;
+  @ManyToOne(() => OrganizationEntity, (organization) => organization.opportunities, { onDelete: 'CASCADE' })
+  organization: OrganizationEntity;
 }

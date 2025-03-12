@@ -1,14 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany  } from 'typeorm';
-import { Application } from './application.entity';
-import { Skill } from './skill.entity';
-import { Certificate } from './certificate.entity';
-import { Education } from './education.entity';
-import { ContributionHistory } from './contribution-history.entity';
-import { Admin } from './admin.entity';
+import { ApplicationEntity } from './application.entity';
+import { SkillEntity } from './skill.entity';
+import { CertificateEntity } from './certificate.entity';
+import { EducationEntity } from './education.entity';
+import { ContributionHistoryEntity } from './contribution-history.entity';
+import { AdminEntity } from './admin.entity';
 import { BaseEntity } from 'src/common/database/BaseEntity';
 
 @Entity()
-export class User extends BaseEntity {
+export class UserEntity extends BaseEntity {
 
   @Column({ length: 255 })
   name: string;
@@ -25,21 +25,21 @@ export class User extends BaseEntity {
   @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
   role: 'user' | 'admin';
 
-  @OneToMany(() => Application, (application) => application.user)
-  applications: Application[];
+  @OneToMany(() => ApplicationEntity, (application) => application.user)
+  applications: ApplicationEntity[];
 
-  @OneToMany(() => Skill, (skill) => skill.user)
-  skills: Skill[];
+  @OneToMany(() => SkillEntity, (skill) => skill.user)
+  skills: SkillEntity[];
 
-  @OneToMany(() => Certificate, (certificate) => certificate.user)
-  certificates: Certificate[];
+  @OneToMany(() => CertificateEntity, (certificate) => certificate.user)
+  certificates: CertificateEntity[];
 
-  @OneToMany(() => Education, (education) => education.user)
-  education: Education[];
+  @OneToMany(() => EducationEntity, (education) => education.user)
+  education: EducationEntity[];
 
-  @OneToMany(() => ContributionHistory, (contribution) => contribution.user)
-  contributions: ContributionHistory[];
+  @OneToMany(() => ContributionHistoryEntity, (contribution) => contribution.user)
+  contributions: ContributionHistoryEntity[];
 
-  @OneToMany(() => Admin, (admin) => admin.user)
-  adminRoles: Admin[];
+  @OneToMany(() => AdminEntity, (admin) => admin.user)
+  adminRoles: AdminEntity[];
 }

@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'typeorm';
-import { Opportunity } from './opportunity.entity';
+import { OpportunityEntity } from './opportunity.entity';
 import { BaseEntity } from 'src/common/database/BaseEntity';
 @Entity()
-export class Organization extends BaseEntity {
+export class OrganizationEntity extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -12,6 +12,6 @@ export class Organization extends BaseEntity {
     @Column({ type: 'text' })
     description: string;
 
-    @OneToMany(() => Opportunity, (opportunity) => opportunity.organization)
-    opportunities: Opportunity[];
+    @OneToMany(() => OpportunityEntity, (opportunity) => opportunity.organization)
+    opportunities: OpportunityEntity[];
 }

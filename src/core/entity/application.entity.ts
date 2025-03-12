@@ -1,16 +1,16 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from './user.entity';
-import { Opportunity } from './opportunity.entity';
+import { UserEntity } from './user.entity';
+import { OpportunityEntity } from './opportunity.entity';
 import { BaseEntity } from 'src/common/database/BaseEntity';
 
 @Entity()
-export class Application extends BaseEntity {
+export class ApplicationEntity extends BaseEntity {
 
-  @ManyToOne(() => User, (user) => user.applications, { onDelete: 'CASCADE' })
-  user: User;
+  @ManyToOne(() => UserEntity, (user) => user.applications, { onDelete: 'CASCADE' })
+  user: UserEntity;
 
-  @ManyToOne(() => Opportunity, { onDelete: 'CASCADE' })
-  opportunity: Opportunity;
+  @ManyToOne(() => OpportunityEntity, { onDelete: 'CASCADE' })
+  opportunity: OpportunityEntity;
 
   @Column({ type: 'enum', enum: ['pending', 'accepted', 'rejected'], default: 'pending' })
   status: 'pending' | 'accepted' | 'rejected';

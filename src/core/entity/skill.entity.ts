@@ -1,13 +1,13 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from './user.entity';
+import { UserEntity } from './user.entity';
 import { BaseEntity } from 'src/common/database/BaseEntity';
 
 @Entity()
-export class Skill extends BaseEntity {
+export class SkillEntity extends BaseEntity {
 
 
-    @ManyToOne(() => User, (user) => user.skills, { onDelete: 'CASCADE' })
-    user: User;
+    @ManyToOne(() => UserEntity, (user) => user.skills, { onDelete: 'CASCADE' })
+    user: UserEntity
 
     @Column({ length: 255 })
     skill_name: string;

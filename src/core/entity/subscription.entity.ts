@@ -1,13 +1,13 @@
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
-import { Organization } from "./organization.entity";
+import { OrganizationEntity } from "./organization.entity";
 import { BaseEntity } from "src/common/database/BaseEntity";
 
 @Entity()
-export class Subscription extends BaseEntity {
+export class SubscriptionEntity extends BaseEntity {
 
-    @ManyToOne(() => Organization)
+    @ManyToOne(() => OrganizationEntity)
     @JoinColumn({ name: 'organization_id' })
-    organization: Organization;
+    organization: OrganizationEntity;
 
     @Column({ type: 'enum', enum: ['basic', 'premium', 'enterprise'] })
     plan_type: string;

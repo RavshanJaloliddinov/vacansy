@@ -4,7 +4,7 @@ import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RefreshTokenDto } from "./dto/refresh-token.dto";
-import { ForgotPasswordDto, ResetPasswordDto, UpdatePasswordDto } from "./dto/update-password.dto";
+import { ForgotPasswordDto, ResetPasswordDto, ResetPasswordWithTokenDto, UpdatePasswordDto } from "./dto/update-password.dto";
 import { JwtAuthGuard } from "./users/AuthGuard";
 import { Public } from "src/common/decorator/public";
 
@@ -42,7 +42,17 @@ export class AuthController {
     async refreshToken(@Body() { refreshToken }: RefreshTokenDto) {
         return this.authService.refreshToken(refreshToken);
     }
-
+    // **6️⃣ Parolni yangilash**
+    @Put("update-password")
+    @ApiBearerAuth('access-token')
+    @UseGuards(JwtAuthGuard) // Token orqali foydalanuvchini aniqlash
+    @ApiBody({ type: UpdatePasswordDto })
+    @ApiResponse({ status: 200, description: "Password updated successfully." })
+    @ApiResponse({ status: 401, description: "Current password is incorrect." })
+    async updatePassword(@Req() req, @Body() updatePasswordDto: UpdatePasswordDto) {
+        const userId = req.user.id;  // Token orqali foydalanuvchi ID'sini olish
+        return this.authService.updatePassword(userId, updatePasswordDto);
+    }
     // **4️⃣ Parolni tiklash uchun OTP yuborish**
     @Post("forgot-password")
     @Public()
@@ -59,19 +69,22 @@ export class AuthController {
     @ApiBody({ type: ResetPasswordDto })
     @ApiResponse({ status: 200, description: "Password reset successfully." })
     @ApiResponse({ status: 401, description: "Invalid OTP." })
-    async resetPassword(@Body() { otp, newPassword, email }: ResetPasswordDto) {
-        return this.authService.resetPassword(otp, newPassword, email);
+    @ApiResponse({ status: 400, description: "Invalid or expired reset token." })
+    async resetPassword(@Body() { otp, resetToken }: ResetPasswordDto) {
+        return this.authService.resetPassword(resetToken, otp);
     }
 
-    // **6️⃣ Parolni yangilash**
-    @Put("update-password")
-    @ApiBearerAuth('access-token')
-    @UseGuards(JwtAuthGuard) // Token orqali foydalanuvchini aniqlash
-    @ApiBody({ type: UpdatePasswordDto })
+
+
+    @Put("update-password-with-token")
+    @Public()
+    @ApiBody({
+        description: "Update password using the reset token",
+        type: ResetPasswordWithTokenDto,
+    })
     @ApiResponse({ status: 200, description: "Password updated successfully." })
-    @ApiResponse({ status: 401, description: "Current password is incorrect." })
-    async updatePassword(@Req() req, @Body() updatePasswordDto: UpdatePasswordDto) {
-        const userId = req.user.id;  // Token orqali foydalanuvchi ID'sini olish
-        return this.authService.updatePassword(userId, updatePasswordDto);
+    @ApiResponse({ status: 401, description: "Invalid password update token." })
+    async updatePasswordWithToken(@Body() resetPasswordDto: ResetPasswordWithTokenDto) {
+        return this.authService.updatePasswordWithToken(resetPasswordDto);
     }
 }

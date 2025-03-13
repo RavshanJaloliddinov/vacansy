@@ -11,7 +11,7 @@ import { join } from 'path';
 export class Application {
   public static async main(): Promise<void> {
     let app = await NestFactory.create(AppModule)
-    app.useGlobalFilters(new AllExceptionFilter());
+    // app.useGlobalFilters(new AllExceptionFilter());
     app.enableCors({ origin: "*" });
 
     app.use("/images", express.static(join(process.cwd(), "uploads")));

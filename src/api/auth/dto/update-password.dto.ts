@@ -18,7 +18,6 @@ export class UpdatePasswordDto {
     newPassword: string;
 }
 
-
 export class ForgotPasswordDto {
     @ApiProperty({
         description: 'The email address of the user requesting a password reset',
@@ -27,7 +26,6 @@ export class ForgotPasswordDto {
     @IsEmail()
     email: string;
 }
-
 
 export class ResetPasswordDto {
     @ApiProperty({
@@ -38,17 +36,26 @@ export class ResetPasswordDto {
     otp: string;  // OTP kodini kiritish
 
     @ApiProperty({
+        description: 'The reset token required to reset the password',
+        example: 'some-reset-token',
+    })
+    @IsString()
+    resetToken: string;  // Reset token
+
+}
+export class ResetPasswordWithTokenDto {
+    @ApiProperty({
         description: 'The new password to be set for the user',
         example: 'newPassword123',
     })
     @IsString()
-    @MinLength(6)
-    newPassword: string;  // Yangi parol
+    @MinLength(6, { message: 'New password must be at least 6 characters long' })
+    newPassword: string;
 
     @ApiProperty({
-        description: 'The email address of the user resetting the password',
-        example: 'example@example.com',
+        description: 'The reset token required to reset the password',
+        example: 'some-reset-token',
     })
-    @IsEmail()
-    email: string;  // Foydalanuvchi emaili
+    @IsString()
+    resetToken: string;  // Reset token
 }

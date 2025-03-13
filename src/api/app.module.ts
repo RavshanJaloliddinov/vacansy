@@ -8,6 +8,9 @@ import { UserModule } from './user/user.module';
 import { JwtStrategy } from './auth/users/AuthStrategy';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/users/AuthGuard';
+import { CertificateModule } from './certificate/certificate.module';
+import { EducationModule } from './education/education.module';
+import { OrganizationModule } from './organization/organization.module';
 
 @Module({
   imports: [
@@ -21,6 +24,9 @@ import { JwtAuthGuard } from './auth/users/AuthGuard';
     AuthModule,
     MailModule,
     UserModule,
+    CertificateModule,
+    EducationModule,
+    OrganizationModule,
   ],
   providers: [
     JwtStrategy,

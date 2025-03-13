@@ -6,7 +6,7 @@ import { BcryptEncryption } from "src/infrastructure/bcrypt";
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from "typeorm";
 import { UserEntity } from "src/core/entity";
-import { UpdatePasswordDto } from "./dto/update-password.dto";
+import { ResetPasswordWithTokenDto, UpdatePasswordDto } from "./dto/update-password.dto";
 import { CustomMailerService } from "src/infrastructure/mail/mail.service";
 import { RedisCacheService } from "src/infrastructure/redis/redis.service";
 
@@ -65,7 +65,9 @@ export class AuthService {
             throw new UnauthorizedException("Current password is incorrect.");
         }
 
-        user.password = await BcryptEncryption.encrypt(newPassword);
+        // Generate and save the new password securely
+        const hashedNewPassword = await BcryptEncryption.encrypt(newPassword);
+        user.password = hashedNewPassword;
         await this.userRepository.save(user);
 
         return { message: "Password updated successfully." };
@@ -84,41 +86,89 @@ export class AuthService {
         // Save OTP in Redis with 10-minute TTL
         await this.redisService.set(`reset_otp:${email}`, otp, 600); // 10 minutes
 
+        // Generate a temporary reset token for password update (valid for 10 minutes)
+        const resetToken = this.jwtService.sign({ email }, {
+            secret: config.ACCESS_TOKEN_SECRET_KEY,
+            expiresIn: '10m',
+        });
+
         // Send OTP via email
         await this.customMailerService.sendPasswordResetEmail(email, otp);
 
-        return { message: "OTP sent to email." };
+        return {
+            message: "OTP sent to email.",
+            resetToken, // Send the resetToken to the user
+        };
     }
 
     // **5️⃣ Parolni tiklash – Yangi parol o‘rnatish (OTP orqali)**
-    async resetPassword(otp: string, newPassword: string, email: string) {
-        // Validate OTP
-        const savedOtp = await this.redisService.get(`reset_otp:${email}`);
-        if (!savedOtp) {
-            throw new UnauthorizedException("OTP has expired or is invalid.");
+    async resetPassword(resetToken: string, otp: string) {
+        try {
+            // Verify the reset token
+            const payload = this.jwtService.verify(resetToken, {
+                secret: config.ACCESS_TOKEN_SECRET_KEY,
+            });
+            // Validate OTP
+            const savedOtp = await this.redisService.get(`reset_otp:${payload.email}`);
+
+            if (!savedOtp) {
+                throw new UnauthorizedException("OTP has expired or is invalid.");
+            }
+
+            if (savedOtp !== otp) {
+                throw new UnauthorizedException("Invalid OTP.");
+            }
+
+            // Find the user by email
+            const user = await this.userRepository.findOne({ where: { email: payload.email, is_deleted: false } });
+            if (!user) {
+                throw new NotFoundException("User not found.");
+            }
+
+            // Generate a new password reset token (valid for a short period of time)
+            const newPasswordToken = this.jwtService.sign({ email: payload.email, password: user.password }, {
+                secret: config.ACCESS_TOKEN_SECRET_KEY,
+                expiresIn: '10m', // This token will be used to verify the new password
+            });
+
+            return {
+                message: "OTP verified successfully. Now, you can update your password.",
+                newPasswordToken, // Send the new password token to the user
+            };
+        } catch (error) {
+            throw new UnauthorizedException("Invalid reset token.");
         }
-
-        if (savedOtp !== otp) {
-            throw new UnauthorizedException("Invalid OTP.");
-        }
-
-        // Find the user by email
-        const user = await this.userRepository.findOne({ where: { email, is_deleted: false } });
-        if (!user) {
-            throw new NotFoundException("User not found.");
-        }
-
-        // Encrypt the new password
-        user.password = await BcryptEncryption.encrypt(newPassword);
-        await this.userRepository.save(user);
-
-        // Delete OTP from Redis after use
-        await this.redisService.deleteByText(`reset_otp:${email}`);
-
-        return { message: "Password has been reset successfully." };
     }
 
-    // **6️⃣ Refresh token orqali yangi token olish**
+    // **6️⃣ Parolni yangilash**
+    async updatePasswordWithToken(resetPasswordDto: ResetPasswordWithTokenDto) {
+        try {
+            // Verify the new password token
+            console.log(resetPasswordDto.resetToken)
+            const payload = this.jwtService.verify(resetPasswordDto.resetToken, {
+                secret: config.ACCESS_TOKEN_SECRET_KEY,
+            });
+
+
+            // Find the user by email
+            const user = await this.userRepository.findOne({ where: { email: payload.email, is_deleted: false, password: payload.password } });
+            if (!user) {
+                throw new NotFoundException("User not found.");
+            }
+
+            // Encrypt the new password
+            user.password = await BcryptEncryption.encrypt(resetPasswordDto.newPassword);
+            await this.userRepository.save(user);
+
+            // Delete OTP from Redis after use (Optional)
+            await this.redisService.deleteByText(`reset_otp:${payload.email}`);
+
+            return { message: "Password updated successfully." };
+        } catch (error) {
+            throw new UnauthorizedException("Invalid password update token.");
+        }
+    }
+
     async refreshToken(refreshToken: string) {
         try {
             // Verify refresh token

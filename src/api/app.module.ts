@@ -24,9 +24,9 @@ import { OrganizationModule } from './organization/organization.module';
     AuthModule,
     MailModule,
     UserModule,
-    CertificateModule,
-    EducationModule,
-    OrganizationModule,
+    // CertificateModule,
+    // EducationModule,
+    // OrganizationModule,
   ],
   providers: [
     JwtStrategy,

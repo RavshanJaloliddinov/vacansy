@@ -23,7 +23,7 @@ export class AuthService {
     // **1️⃣ Foydalanuvchini ro‘yxatdan o‘tkazish**
     async register(registerDto: RegisterDto) {
         const { email, password, name } = registerDto;
-        const existingUser = await this.userRepository.findOne({ where: { email } });
+        const existingUser = await this.userRepository.findOne({ where: { email, is_deleted: false } });
 
         if (existingUser) {
             throw new ConflictException("Email already registered.");
@@ -38,7 +38,7 @@ export class AuthService {
 
     // **2️⃣ Login qilish**
     async login(email: string, password: string) {
-        const user = await this.userRepository.findOne({ where: { email } });
+        const user = await this.userRepository.findOne({ where: { email, is_deleted: false } });
         if (!user) {
             throw new UnauthorizedException("Invalid email or password.");
         }
@@ -73,7 +73,7 @@ export class AuthService {
 
     // **4️⃣ Parolni tiklash – Email yuborish**
     async forgotPassword(email: string) {
-        const user = await this.userRepository.findOne({ where: { email } });
+        const user = await this.userRepository.findOne({ where: { email, is_deleted: false } });
         if (!user) {
             throw new NotFoundException("User with this email not found.");
         }
@@ -103,7 +103,7 @@ export class AuthService {
         }
 
         // Find the user by email
-        const user = await this.userRepository.findOne({ where: { email } });
+        const user = await this.userRepository.findOne({ where: { email, is_deleted: false } });
         if (!user) {
             throw new NotFoundException("User not found.");
         }
@@ -133,7 +133,7 @@ export class AuthService {
             }
 
             // Find the user by ID
-            const user = await this.userRepository.findOne({ where: { id: payload.id } });
+            const user = await this.userRepository.findOne({ where: { id: payload.id, is_deleted: false } });
             if (!user) {
                 throw new UnauthorizedException("User not found.");
             }

@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Put, Req, UseGuards } from "@nestjs/common";
-import { ApiBody, ApiTags, ApiResponse } from "@nestjs/swagger";
+import { ApiBody, ApiTags, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
@@ -65,6 +65,7 @@ export class AuthController {
 
     // **6️⃣ Parolni yangilash**
     @Put("update-password")
+    @ApiBearerAuth('access-token')
     @UseGuards(JwtAuthGuard) // Token orqali foydalanuvchini aniqlash
     @ApiBody({ type: UpdatePasswordDto })
     @ApiResponse({ status: 200, description: "Password updated successfully." })

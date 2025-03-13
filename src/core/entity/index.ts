@@ -1,4 +1,4 @@
-export * from './admin.entity'
+// export * from './admin.entity'
 export * from './application.entity'
 export * from './certificate.entity'
 export * from './contribution-history.entity'

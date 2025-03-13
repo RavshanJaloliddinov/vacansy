@@ -11,7 +11,7 @@ export class LoginDto {
     email: string;
 
     @ApiProperty({
-        example: 'StrongPassword123',
+        example: 'StrongPassword123!',
         description: 'Foydalanuvchi paroli',
     })
     @IsString({ message: 'Parol matn bo‘lishi kerak' })

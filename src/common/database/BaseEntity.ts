@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class BaseEntity {
@@ -19,21 +19,21 @@ export class BaseEntity {
     })
     is_deleted: boolean;
 
-    @Column()
-    created_at: number;
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    created_at: Date;
 
-    @Column()
-    updated_at: number;
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    updated_at: Date;
 
-    @Column()
-    deleted_at: number;
+    @Column({ type: 'timestamp', nullable: true })
+    deleted_at: Date;
 
-    @Column()
-    creted_by: string;
+    @Column({ nullable: true })
+    created_by: string;
 
-    @Column()
+    @Column({ nullable: true })
     updated_by: string;
 
-    @Column()
+    @Column({ nullable: true })
     deleted_by: string;
 }

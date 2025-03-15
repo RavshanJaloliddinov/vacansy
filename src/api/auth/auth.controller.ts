@@ -33,6 +33,15 @@ export class AuthController {
         return this.authService.login(email, password);
     }
 
+    @Post("login-organization")
+    @Public()
+    @ApiBody({ type: LoginDto })
+    @ApiResponse({ status: 200, description: "Login successful." })
+    @ApiResponse({ status: 401, description: "Unauthorized." })
+    async loginOrganization(@Body() { email, password }: LoginDto) {
+        return this.authService.loginOrganization(email, password);
+    }
+
     // **3️⃣ Refresh token orqali yangi access token olish**
     @Post("refresh")
     @Public()

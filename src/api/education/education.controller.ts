@@ -13,10 +13,12 @@ import { CreateEducationDto } from './dto/create-education.dto';
 import { UpdateEducationDto } from './dto/update-education.dto';
 import { CurrentUser } from 'src/common/decorator/current-user';
 import { UserEntity } from 'src/core/entity';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @Controller('education')
 export class EducationController {
-  constructor(private readonly educationService: EducationService) {}
+  constructor(private readonly educationService: EducationService) { }
 
   @Post()
   async create(

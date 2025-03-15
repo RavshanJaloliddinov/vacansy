@@ -1,41 +1,35 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsDate, IsOptional } from 'class-validator';
+import { IsString, IsDate, IsOptional, IsEnum } from 'class-validator';
+import { EducationEnum } from 'src/common/database/Enum';
 
 export class CreateEducationDto {
-  @ApiProperty({
-    description: 'The name of the institution where the user studied.',
-    example: 'Harvard University',
-  })
+  @ApiProperty({ example: 'Harvard University' })
   @IsString()
   institution: string;
 
-  @ApiProperty({
-    description: 'The degree obtained by the user.',
-    example: 'Bachelor of Science',
-  })
+  @ApiProperty({ example: 'Bachelor of Science' })
   @IsString()
   degree: string;
 
-  @ApiProperty({
-    description: 'The field of study of the user.',
-    example: 'Computer Science',
-  })
+  @ApiProperty({ example: 'Computer Science' })
   @IsString()
   field_of_study: string;
 
-  @ApiProperty({
-    description: 'The start date of the education.',
-    example: '2020-01-01',
-  })
+  @ApiProperty({ example: '2020-09-01T00:00:00.000Z', type: 'string', format: 'date-time' })
   @IsDate()
   start_date: Date;
 
-  @ApiProperty({
-    description: 'The end date of the education (optional).',
-    example: '2024-05-15',
-    required: false,
-  })
+  @ApiProperty({ required: false, example: '2024-06-01T00:00:00.000Z', type: 'string', format: 'date-time' })
   @IsOptional()
   @IsDate()
   end_date?: Date;
+
+  @ApiProperty({ enum: EducationEnum, default: EducationEnum.FULL_TIME, example: EducationEnum.FULL_TIME })
+  @IsEnum(['full-time', 'part-time', 'online'])
+  education_type: EducationEnum;
+
+  @ApiProperty({ required: false, example: 'Studied advanced topics in AI and ML' })
+  @IsOptional()
+  @IsString() 
+  description?: string;
 }

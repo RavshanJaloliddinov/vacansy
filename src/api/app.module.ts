@@ -11,6 +11,9 @@ import { JwtAuthGuard } from './auth/users/AuthGuard';
 import { CertificateModule } from './certificate/certificate.module';
 import { EducationModule } from './education/education.module';
 import { OrganizationModule } from './organization/organization.module';
+import { SkillModule } from './skill/skill.module';
+import { ApplicationModule } from './application/application.module';
+import { OpportunityModule } from './opportunity/opportunity.module';
 
 @Module({
   imports: [
@@ -24,9 +27,12 @@ import { OrganizationModule } from './organization/organization.module';
     AuthModule,
     MailModule,
     UserModule,
-    // CertificateModule,
-    // EducationModule,
+    CertificateModule,
+    EducationModule,
     // OrganizationModule,
+    SkillModule,
+    // ApplicationModule,
+    // OpportunityModule,
   ],
   providers: [
     JwtStrategy,

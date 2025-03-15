@@ -5,7 +5,7 @@ import { RegisterDto } from "./dto/register.dto";
 import { BcryptEncryption } from "src/infrastructure/bcrypt";
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from "typeorm";
-import { UserEntity } from "src/core/entity";
+import { OrganizationEntity, UserEntity } from "src/core/entity";
 import { ResetPasswordWithTokenDto, UpdatePasswordDto } from "./dto/update-password.dto";
 import { CustomMailerService } from "src/infrastructure/mail/mail.service";
 import { RedisCacheService } from "src/infrastructure/redis/redis.service";
@@ -17,7 +17,8 @@ export class AuthService {
         private readonly userRepository: Repository<UserEntity>,
         private readonly jwtService: JwtService,
         private readonly redisService: RedisCacheService,
-        private readonly customMailerService: CustomMailerService
+        private readonly customMailerService: CustomMailerService,
+        private readonly organizationRepository: Repository<OrganizationEntity>
     ) { }
 
     // **1️⃣ Foydalanuvchini ro‘yxatdan o‘tkazish**
@@ -49,6 +50,20 @@ export class AuthService {
         }
 
         return this.generateTokens(user.id, user.email, user.role);
+    }
+
+    async loginOrganization(email: string, password: string) {
+        const organization = await this.organizationRepository.findOne({ where: { email, is_deleted: false } })
+
+        if (!organization) {
+            throw new NotFoundException('Invalid password or email')
+        }
+        const isPasswordValid = await BcryptEncryption.compare(password, organization.password)
+
+        if (!isPasswordValid) {
+            throw new UnauthorizedException("Invalid email or password.");
+        }
+        return this.generateTokens(organization.id, organization.email, 'organization')
     }
 
     // **3️⃣ Parolni yangilash**

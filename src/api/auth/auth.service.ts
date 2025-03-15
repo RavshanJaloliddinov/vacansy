@@ -18,6 +18,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly redisService: RedisCacheService,
         private readonly customMailerService: CustomMailerService,
+        @InjectRepository(OrganizationEntity)
         private readonly organizationRepository: Repository<OrganizationEntity>
     ) { }
 

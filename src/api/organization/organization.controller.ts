@@ -7,7 +7,7 @@ import { CurrentUser } from 'src/common/decorator/current-user';
 import { UserEntity } from 'src/core/entity';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Organizations') // Add tag for grouping related endpoints in Swagger UI
+@ApiTags('Organizations') 
 @Controller('organizations')
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) { }

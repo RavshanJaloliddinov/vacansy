@@ -19,7 +19,6 @@ export class UserController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiConsumes('multipart/form-data') // Specify that this endpoint accepts multipart/form-data
   @UseInterceptors(FileInterceptor('image')) // Handle file upload
-
   async createUser(
     @UploadedFile() imageFile: Express.Multer.File,
     @CurrentUser() user: UserEntity,
@@ -86,7 +85,7 @@ export class UserController {
   })
   @UseInterceptors(FileInterceptor('image')) // Handle file upload
   async updateProfile(
-    @CurrentUser() user: UserEntity,
+    @CurrentUser() user: UserEntity, 
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() imageFile: Express.Multer.File, // Uploaded file will be available here
   ) {

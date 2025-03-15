@@ -1,49 +1,41 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsDate, IsOptional } from 'class-validator';
+import { IsString, IsDate, IsOptional, IsEnum } from 'class-validator';
+import { EducationEnum } from 'src/common/database/Enum';
+
 
 export class UpdateEducationDto {
-  @ApiProperty({
-    description: 'The name of the institution where the user studied.',
-    example: 'MIT',
-    required: false,
-  })
-  @IsString()
+  @ApiProperty({ required: false, example: 'Stanford University' })
   @IsOptional()
+  @IsString()
   institution?: string;
 
-  @ApiProperty({
-    description: 'The degree obtained by the user.',
-    example: 'Master of Science',
-    required: false,
-  })
-  @IsString()
+  @ApiProperty({ required: false, example: 'Master of Science' })
   @IsOptional()
+  @IsString()
   degree?: string;
 
-  @ApiProperty({
-    description: 'The field of study of the user.',
-    example: 'Artificial Intelligence',
-    required: false,
-  })
-  @IsString()
+  @ApiProperty({ required: false, example: 'Data Science' })
   @IsOptional()
+  @IsString()
   field_of_study?: string;
 
-  @ApiProperty({
-    description: 'The start date of the education.',
-    example: '2018-08-01',
-    required: false,
-  })
-  @IsDate()
+  @ApiProperty({ required: false, example: '2022-09-01T00:00:00.000Z', type: 'string', format: 'date-time' })
   @IsOptional()
+  @IsDate()
   start_date?: Date;
 
-  @ApiProperty({
-    description: 'The end date of the education.',
-    example: '2022-06-01',
-    required: false,
-  })
-  @IsDate()
+  @ApiProperty({ required: false, example: '2026-06-01T00:00:00.000Z', type: 'string', format: 'date-time' })
   @IsOptional()
+  @IsDate()
   end_date?: Date;
+
+  @ApiProperty({ enum: EducationEnum, default: EducationEnum.FULL_TIME, example: EducationEnum.FULL_TIME })
+  @IsEnum(EducationEnum)
+  @IsOptional()
+  education_type: EducationEnum;
+
+  @ApiProperty({ required: false, example: 'Focusing on deep learning and neural networks' })
+  @IsOptional()
+  @IsString()
+  description?: string;
 }

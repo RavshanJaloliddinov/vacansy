@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EducationEntity } from 'src/core/entity';
@@ -11,67 +11,65 @@ export class EducationService {
   constructor(
     @InjectRepository(EducationEntity)
     private readonly educationRepository: Repository<EducationEntity>,
-  ) {}
+  ) { }
 
-  // Yangi ta'lim ma'lumotlarini yaratish
-  async create(
-    createEducationDto: CreateEducationDto,
-    user: UserEntity,
-  ): Promise<EducationEntity> {
-    const education = this.educationRepository.create({
-      ...createEducationDto,
-      user, // Foydalanuvchini ta'lim bilan bog'lash
-    });
-
-    return await this.educationRepository.save(education);
+  async create(createEducationDto: CreateEducationDto, user: UserEntity): Promise<EducationEntity> {
+    try {
+      const education = this.educationRepository.create({
+        ...createEducationDto,
+        user,
+      });
+      return await this.educationRepository.save(education);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to create education record');
+    }
   }
 
-  // Foydalanuvchining barcha ta'lim ma'lumotlarini olish
   async findAll(user: UserEntity): Promise<EducationEntity[]> {
-    return await this.educationRepository.find({ where: { user } });
+    try {
+      return await this.educationRepository.find({ where: { user } });
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to retrieve education records');
+    }
   }
 
-  // Foydalanuvchining ma'lum bir ta'lim ma'lumotini olish
   async findOne(id: string, user: UserEntity): Promise<EducationEntity> {
-    const education = await this.educationRepository.findOne({
-      where: { id, user },
-    });
-
-    if (!education) {
-      throw new NotFoundException('Education not found');
+    try {
+      const education = await this.educationRepository.findOne({ where: { id, user } });
+      if (!education) {
+        throw new NotFoundException('Education not found');
+      }
+      return education;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to retrieve education record');
     }
-
-    return education;
   }
 
-  // Ta'lim ma'lumotlarini yangilash
-  async update(
-    id: string,
-    updateEducationDto: UpdateEducationDto,
-    user: UserEntity,
-  ): Promise<EducationEntity> {
-    const education = await this.findOne(id, user);
-
-    if (!education) {
-      throw new NotFoundException('Education not found');
+  async update(id: string, updateEducationDto: UpdateEducationDto, user: UserEntity): Promise<EducationEntity> {
+    try {
+      const education = await this.findOne(id, user);
+      if (!education) {
+        throw new NotFoundException('Education not found');
+      }
+      const updatedEducation = await this.educationRepository.save({
+        ...education,
+        ...updateEducationDto,
+      });
+      return updatedEducation;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to update education record');
     }
-
-    const updatedEducation = await this.educationRepository.save({
-      ...education,
-      ...updateEducationDto,
-    });
-
-    return updatedEducation;
   }
 
-  // Ta'lim ma'lumotlarini o'chirish
   async remove(id: string, user: UserEntity): Promise<void> {
-    const education = await this.findOne(id, user);
-
-    if (!education) {
-      throw new NotFoundException('Education not found');
+    try {
+      const education = await this.educationRepository.findOne({ where: { id, user } });
+      if (!education) {
+        throw new NotFoundException('Education not found');
+      }
+      await this.educationRepository.remove(education);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to delete education record');
     }
-
-    await this.educationRepository.remove(education);
   }
 }

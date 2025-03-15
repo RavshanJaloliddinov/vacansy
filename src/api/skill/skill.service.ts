@@ -11,7 +11,7 @@ export class SkillService {
   constructor(
     @InjectRepository(SkillEntity)
     private readonly skillRepository: Repository<SkillEntity>,
-  ) {}
+  ) { }
 
   // Malaka yaratish
   async create(
@@ -74,4 +74,18 @@ export class SkillService {
 
     await this.skillRepository.remove(skill);
   }
+
+  async searchUsersBySkill(skillName: string): Promise<{ user: UserEntity; skill: Omit<SkillEntity, 'user'> }[]> {
+    const skills = await this.skillRepository
+      .createQueryBuilder('skill')
+      .leftJoinAndSelect('skill.user', 'user')
+      .where('skill.skill_name ILIKE :skillName', { skillName: `%${skillName}%` })
+      .getMany();
+
+    return skills.map(skill => {
+      const { user, ...skillWithoutUser } = skill; // user maydonini skill obyektidan ajratamiz
+      return { user, skill: skillWithoutUser };
+    });
+  }
+
 }

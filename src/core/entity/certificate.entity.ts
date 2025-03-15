@@ -3,7 +3,7 @@ import { UserEntity } from './user.entity';
 import { BaseEntity } from 'src/common/database/BaseEntity';
 
 @Entity()
-export class CertificateEntity extends BaseEntity{
+export class CertificateEntity extends BaseEntity {
   @ManyToOne(() => UserEntity, (user) => user.certificates, { onDelete: 'CASCADE' })
   user: UserEntity;
 
@@ -15,4 +15,17 @@ export class CertificateEntity extends BaseEntity{
 
   @Column({ type: 'timestamp' })
   issue_date: Date;
+
+  @Column({ length: 500, nullable: true })
+  image: string;
+
+  @Column({ length: 500, nullable: true })
+  certificate_url: string;
+
+  @Column({ type: 'text', nullable: true })
+  description: string;
+  
+  @Column({ type: 'timestamp', nullable: true })
+  expiration_date: Date;
+
 }

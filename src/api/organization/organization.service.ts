@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { OrganizationEntity } from 'src/core/entity';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
-import { UserEntity } from 'src/core/entity/user.entity'; // UserEntity importi
+import { UserEntity } from 'src/core/entity/user.entity'; 
 
 @Injectable()
 export class OrganizationService {
@@ -15,7 +15,7 @@ export class OrganizationService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  // Create organization
+
   async create(createOrganizationDto: CreateOrganizationDto, currentUserId: string): Promise<any> {
     try {
       const user = await this.userRepository.findOne({ where: { id: currentUserId } });
@@ -28,7 +28,6 @@ export class OrganizationService {
       organization.created_by = currentUserId;
       await this.organizationRepository.save(organization);
 
-      // Log the creation
       console.log(`${currentUserId} created a new organization: ${organization.name}`);
 
       return { status: 'success', data: organization, message: 'Organization successfully created' };

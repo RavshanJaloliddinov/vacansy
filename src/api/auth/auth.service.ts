@@ -23,6 +23,27 @@ export class AuthService {
     ) { }
 
     // **1️⃣ Foydalanuvchini ro‘yxatdan o‘tkazish**
+    // async register(registerDto: RegisterDto) {
+    //     const { email, password, name } = registerDto;
+
+    //     const existingUser = await this.userRepository.findOne({ where: { email, is_deleted: false } });
+    //     if (existingUser) {
+    //         throw new ConflictException("Email already registered.");
+    //     }
+
+    //     // OTP generatsiya qilish
+    //     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    //     // OTPni Redisda saqlash (10 daqiqaga)
+    //     await this.redisService.set(`register_otp:${email}`, otp, 600);
+
+    //     // Emailga yuborish
+    //     await this.customMailerService.sendOtpEmail(email, otp);
+
+    //     return { message: "OTP sent to your email. Please verify to complete registration." };
+    // }
+
+    // **1️⃣ Ro‘yxatdan o‘tish (OTP yuborish)**
     async register(registerDto: RegisterDto) {
         const { email, password, name } = registerDto;
         const existingUser = await this.userRepository.findOne({ where: { email, is_deleted: false } });
@@ -31,12 +52,45 @@ export class AuthService {
             throw new ConflictException("Email already registered.");
         }
 
+        // OTP yaratish
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Redis-ga foydalanuvchi malumotlari bilan OTP saqlash (10 daqiqa)
+        await this.redisService.set(`register_otp:${email}`, JSON.stringify({ name, email, password, otp }), 600);
+
+        // OTP-ni email orqali yuborish
+        await this.customMailerService.sendOtpEmail(email, otp);
+
+        return { message: "OTP sent to email. Please verify." };
+    }
+
+    // **2️⃣ OTP tasdiqlash va ro‘yxatdan o‘tkazish**
+    async verifyOtp(email: string, otp: string) {
+        // Redisdan saqlangan ma'lumotlarni olish
+        const data = await this.redisService.get(`register_otp:${email}`);
+
+        if (!data) {
+            throw new UnauthorizedException("OTP has expired or is invalid.");
+        }
+
+        const { name, password, otp: savedOtp } = JSON.parse(data);
+
+        if (savedOtp !== otp) {
+            throw new UnauthorizedException("Invalid OTP.");
+        }
+
+        // Foydalanuvchini bazaga qo‘shish
         const hashedPassword = await BcryptEncryption.encrypt(password);
         const user = this.userRepository.create({ email, password: hashedPassword, name });
         await this.userRepository.save(user);
 
+        // Redis-dan OTPni o‘chirish
+        await this.redisService.deleteByText(`register_otp:${email}`);
+
         return this.generateTokens(user.id, user.email, user.role);
     }
+
+
 
     // **2️⃣ Login qilish**
     async login(email: string, password: string) {

@@ -10,9 +10,11 @@ import { BcryptEncryption } from 'src/infrastructure/bcrypt';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
 import { MailModule } from 'src/infrastructure/mail/mail.module';
 import { CustomMailerService } from 'src/infrastructure/mail/mail.service';
+import { OrganizationEntity } from 'src/core/entity';
+import { RedisCacheService } from 'src/infrastructure/redis/redis.service';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, OrganizationEntity]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: config.ACCESS_TOKEN_SECRET_KEY,
@@ -20,7 +22,7 @@ import { CustomMailerService } from 'src/infrastructure/mail/mail.service';
     }),
     RedisModule,
   ],
-  providers: [AuthService, BcryptEncryption, CustomMailerService],
+  providers: [AuthService, BcryptEncryption, CustomMailerService, RedisCacheService],
   controllers: [AuthController],
 })
 export class AuthModule { }

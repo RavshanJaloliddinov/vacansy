@@ -16,6 +16,11 @@ export class OpportunityService {
 
 
   async create(createOpportunityDto: CreateOpportunityDto, organization: OrganizationEntity): Promise<OpportunityEntity> {
+    const org = await this.organizationRepository.findOne({ where: { id: organization.id } })
+    if (!org) {
+      throw new NotFoundException('Organization not found')
+    }
+
     const opportunity = this.opportunityRepository.create({
       ...createOpportunityDto,
       organization,
@@ -24,17 +29,20 @@ export class OpportunityService {
     return await this.opportunityRepository.save(opportunity);
   }
 
-  
+
   async findAllByOrganization(organizationId: string): Promise<OpportunityEntity[]> {
     return await this.opportunityRepository.find({
       where: { organization: { id: organizationId } },
     });
   }
+  async findAll(): Promise<OpportunityEntity[]> {
+    return await this.opportunityRepository.find();
+  }
 
-  // ✅ Organization faqat o‘ziga tegishli opportunityni o‘zgartira oladi
+
   async update(id: string, createOpportunityDto: CreateOpportunityDto, organizationId: string): Promise<OpportunityEntity> {
     const opportunity = await this.opportunityRepository.findOne({
-      where: { id },
+      where: { id, organization: { id: organizationId } },
       relations: ['organization'],
     });
 
@@ -50,10 +58,10 @@ export class OpportunityService {
     return await this.opportunityRepository.save(opportunity);
   }
 
-  // ✅ Organization faqat o‘ziga tegishli opportunityni o‘chira oladi
+
   async delete(id: string, organizationId: string): Promise<void> {
     const opportunity = await this.opportunityRepository.findOne({
-      where: { id },
+      where: { id, organization: { id: organizationId } },
       relations: ['organization'],
     });
 
@@ -61,9 +69,11 @@ export class OpportunityService {
       throw new NotFoundException('Opportunity not found');
     }
 
-    if (opportunity.organization.id !== organizationId) {
-      throw new ForbiddenException('You are not allowed to delete this opportunity');
-    }
+    opportunity.deleted_at = new Date(); 
+    opportunity.deleted_by = organizationId;
+    opportunity.is_deleted = true;
+
+    await this.organizationRepository.save(opportunity);
 
     await this.opportunityRepository.remove(opportunity);
   }

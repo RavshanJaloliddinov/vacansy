@@ -32,6 +32,7 @@ export class AuthController {
     async login(@Body() { email, password }: LoginDto) {
         return this.authService.login(email, password);
     }
+    
 
     @Post("login-organization")
     @Public()
@@ -42,7 +43,8 @@ export class AuthController {
         return this.authService.loginOrganization(email, password);
     }
 
-    // **3️⃣ Refresh token orqali yangi access token olish**
+    
+
     @Post("refresh")
     @Public()
     @ApiBody({ type: RefreshTokenDto })
@@ -51,7 +53,8 @@ export class AuthController {
     async refreshToken(@Body() { refreshToken }: RefreshTokenDto) {
         return this.authService.refreshToken(refreshToken);
     }
-    // **6️⃣ Parolni yangilash**
+    
+
     @Put("update-password")
     @ApiBearerAuth('access-token')
     @UseGuards(JwtAuthGuard) // Token orqali foydalanuvchini aniqlash
@@ -62,7 +65,8 @@ export class AuthController {
         const userId = req.user.id;  // Token orqali foydalanuvchi ID'sini olish
         return this.authService.updatePassword(userId, updatePasswordDto);
     }
-    // **4️⃣ Parolni tiklash uchun OTP yuborish**
+
+
     @Post("forgot-password")
     @Public()
     @ApiBody({ type: ForgotPasswordDto })
@@ -72,7 +76,8 @@ export class AuthController {
         return this.authService.forgotPassword(email);
     }
 
-    // **5️⃣ OTP orqali parolni tiklash**
+    
+
     @Put("reset-password")
     @Public()
     @ApiBody({ type: ResetPasswordDto })

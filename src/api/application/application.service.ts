@@ -20,8 +20,7 @@ export class ApplicationService {
   // ✅ Foydalanuvchi faqat ariza yaratishi mumkin
   async create(createApplicationDto: CreateApplicationDto, user: UserEntity): Promise<ApplicationEntity> {
     const opportunity = await this.opportunityRepository.findOne({
-      where: { id: createApplicationDto.opportunityId },
-      relations: ['organization'],
+      where: { id: createApplicationDto.opportunityId }
     });
 
     if (!opportunity) {

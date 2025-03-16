@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrganizationEntity } from 'src/core/entity';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
-import { UserEntity } from 'src/core/entity/user.entity'; 
+import { UserEntity } from 'src/core/entity/user.entity';
+import { BcryptEncryption } from 'src/infrastructure/bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class OrganizationService {
@@ -13,39 +15,40 @@ export class OrganizationService {
     private readonly organizationRepository: Repository<OrganizationEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) {}
-
+  ) { }
 
   async create(createOrganizationDto: CreateOrganizationDto, currentUserId: string): Promise<any> {
     try {
-      const user = await this.userRepository.findOne({ where: { id: currentUserId } });
+      const org = await this.organizationRepository.findOne({ where: { email: createOrganizationDto.email, is_deleted: false } })
+      const user = await this.userRepository.findOne({ where: { id: currentUserId, is_deleted: false } });
 
       if (!user) {
-        return { status: 'error', data: null, message: 'User not found' };
+        throw new NotFoundException('User not found');
+      }
+      if (!org) {
+        throw new ConflictException("Email already registered.");
       }
 
-      const organization = this.organizationRepository.create(createOrganizationDto);
+      const password = await BcryptEncryption.encrypt(createOrganizationDto.password)
+      const organization = this.organizationRepository.create({ ...createOrganizationDto, password });
       organization.created_by = currentUserId;
+
       await this.organizationRepository.save(organization);
 
-      console.log(`${currentUserId} created a new organization: ${organization.name}`);
-
-      return { status: 'success', data: organization, message: 'Organization successfully created' };
+      return { status: 201, data: organization, message: 'Organization successfully created' };
     } catch (error) {
-      return { status: 'error', data: null, message: error.message };
+      throw new InternalServerErrorException(error.message);
     }
   }
 
-  // Update organization
   async update(id: string, updateOrganizationDto: UpdateOrganizationDto, currentUserId: string): Promise<any> {
     try {
       const organization = await this.organizationRepository.findOne({ where: { id } });
 
       if (!organization) {
-        return { status: 'error', data: null, message: 'Organization not found' };
+        throw new NotFoundException('Organization not found');
       }
 
-      // Update the organization
       await this.organizationRepository.update(id, {
         ...updateOrganizationDto,
         updated_by: currentUserId,
@@ -53,22 +56,20 @@ export class OrganizationService {
 
       const updatedOrganization = await this.organizationRepository.findOne({ where: { id } });
 
-      // Log the update
       console.log(`${currentUserId} updated organization: ${updatedOrganization.name}`);
 
-      return { status: 'success', data: updatedOrganization, message: 'Organization successfully updated' };
+      return { status: 200, data: updatedOrganization, message: 'Organization successfully updated' };
     } catch (error) {
-      return { status: 'error', data: null, message: error.message };
+      throw new InternalServerErrorException(error.message);
     }
   }
 
-  // Remove organization (soft delete)
   async remove(id: string, currentUserId: string): Promise<any> {
     try {
       const organization = await this.organizationRepository.findOne({ where: { id } });
 
       if (!organization) {
-        return { status: 'error', data: null, message: 'Organization not found' };
+        throw new NotFoundException('Organization not found');
       }
 
       organization.deleted_at = new Date();
@@ -77,35 +78,32 @@ export class OrganizationService {
 
       await this.organizationRepository.save(organization);
 
-      // Log the deletion
       console.log(`${currentUserId} soft-deleted organization: ${organization.name}`);
 
-      return { status: 'success', data: null, message: 'Organization successfully soft-deleted' };
+      return { status: 200, data: null, message: 'Organization successfully soft-deleted' };
     } catch (error) {
-      return { status: 'error', data: null, message: error.message };
+      throw new InternalServerErrorException(error.message);
     }
   }
 
-  // Get organization by ID
   async findOne(id: string): Promise<any> {
     try {
       const organization = await this.organizationRepository.findOne({ where: { id } });
       if (!organization) {
-        return { status: 'error', data: null, message: 'Organization not found' };
+        throw new NotFoundException('Organization not found');
       }
-      return { status: 'success', data: organization, message: 'Organization retrieved successfully' };
+      return { status: 200, data: organization, message: 'Organization retrieved successfully' };
     } catch (error) {
-      return { status: 'error', data: null, message: error.message };
+      throw new InternalServerErrorException(error.message);
     }
   }
 
-  // Get all organizations
   async findAll(): Promise<any> {
     try {
       const organizations = await this.organizationRepository.find();
-      return { status: 'success', data: organizations, message: 'Organizations retrieved successfully' };
+      return { status: 200, data: organizations, message: 'Organizations retrieved successfully' };
     } catch (error) {
-      return { status: 'error', data: null, message: error.message };
+      throw new InternalServerErrorException(error.message);
     }
   }
 }

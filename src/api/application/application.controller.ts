@@ -3,7 +3,7 @@ import { ApplicationService } from './application.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
 import { CurrentUser } from 'src/common/decorator/current-user';
-import { UserEntity } from 'src/core/entity';
+import { OrganizationEntity, UserEntity } from 'src/core/entity';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Applications')
@@ -31,7 +31,7 @@ export class ApplicationController {
   async updateStatus(
     @Param('id') id: string,
     @Body() updateApplicationDto: UpdateApplicationDto,
-    @CurrentUser() organization: UserEntity, // Organization entity expected here
+    @CurrentUser() organization: OrganizationEntity, // Organization entity expected here
   ) {
     return this.applicationService.updateStatus(id, updateApplicationDto, organization.id);
   }

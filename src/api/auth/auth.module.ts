@@ -10,8 +10,12 @@ import { BcryptEncryption } from 'src/infrastructure/bcrypt';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
 import { CustomMailerService } from 'src/infrastructure/mail/mail.service';
 import { OrganizationEntity } from 'src/core/entity';
+<<<<<<< HEAD
 import { OrganizationService } from '../organization/organization.service';
 import { OrganizationModule } from '../organization/organization.module';
+=======
+import { RedisCacheService } from 'src/infrastructure/redis/redis.service';
+>>>>>>> dev
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity, OrganizationEntity]),
@@ -23,7 +27,11 @@ import { OrganizationModule } from '../organization/organization.module';
     RedisModule,
     OrganizationModule
   ],
+<<<<<<< HEAD
   providers: [AuthService, BcryptEncryption, CustomMailerService, OrganizationService],
+=======
+  providers: [AuthService, BcryptEncryption, CustomMailerService, RedisCacheService],
+>>>>>>> dev
   controllers: [AuthController],
 })
 export class AuthModule { }

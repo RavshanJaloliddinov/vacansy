@@ -6,13 +6,4 @@ export class CreateApplicationDto {
     @ApiProperty({ example: 'uuid', description: 'Opportunity ID' })
     @IsNotEmpty()
     opportunityId: string;
-
-    @ApiProperty({
-        example: ApplicationStatus.PENDING,
-        description: 'Application status',
-        enum: ApplicationStatus,
-        default: ApplicationStatus.PENDING,
-    })
-    @IsEnum(ApplicationStatus)
-    status: ApplicationStatus;
 }

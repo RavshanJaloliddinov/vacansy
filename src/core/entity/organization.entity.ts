@@ -9,7 +9,7 @@ export class OrganizationEntity extends BaseEntity {
     @Column({ length: 255 })
     name: string;
 
-    @Column({ length: 255, unique: true })
+    @Column({ length: 255 })
     email: string;
 
     @Column({ length: 255 })

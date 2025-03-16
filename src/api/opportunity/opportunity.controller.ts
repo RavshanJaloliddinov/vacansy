@@ -28,6 +28,13 @@ export class OpportunityController {
     return this.opportunityService.findAllByOrganization(organization.id);
   }
 
+  @ApiOperation({ summary: 'Get opportunities by users' })
+  @ApiResponse({ status: 200, description: 'List of opportunities' })
+  @Get('all')
+  async findAll() {
+    return this.opportunityService.findAll();
+  }
+
   @ApiOperation({ summary: 'Update an opportunity (Organization only)' })
   @ApiResponse({ status: 200, description: 'Opportunity updated successfully' })
   @Patch(':id')

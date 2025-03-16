@@ -46,7 +46,7 @@ export enum OpportunityType {
 export enum ExperienceLevel {
     NO_EXPERIENCE = 'no_experience',
     JUNIOR = 'junior',
-    MID = 'middle',
+    MIDDLE = 'middle',
     SENIOR = 'senior',
 }
 

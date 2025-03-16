@@ -29,10 +29,10 @@ import { OpportunityModule } from './opportunity/opportunity.module';
     UserModule,
     CertificateModule,
     EducationModule,
-    // OrganizationModule,
+    OrganizationModule,
     SkillModule,
-    // ApplicationModule,
-    // OpportunityModule,
+    ApplicationModule,
+    OpportunityModule,
   ],
   providers: [
     JwtStrategy,

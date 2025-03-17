@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException, ConflictException } from "@nestjs/common";
+import { Injectable, NotFoundException, UnauthorizedException, ConflictException, BadRequestException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { config } from "src/config";
 import { RegisterDto } from "./dto/register.dto";
@@ -45,9 +45,11 @@ export class AuthService {
 
     // **1️⃣ Ro‘yxatdan o‘tish (OTP yuborish)**
     async register(registerDto: RegisterDto) {
-        const { email, password, name } = registerDto;
+        const { email, password, conifirmPassword, name } = registerDto;
         const existingUser = await this.userRepository.findOne({ where: { email, is_deleted: false } });
-
+        if(password !== conifirmPassword){
+            throw new BadRequestException("Password and Confirm Password do not match");
+        }
         if (existingUser) {
             throw new ConflictException("Email already registered.");
         }

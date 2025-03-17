@@ -29,6 +29,16 @@ export class RegisterDto {
     @IsNotEmpty()
     @MinLength(6)
     password: string;
+
+    @ApiProperty({
+        example: "User1234!",
+        description: "Foydalanuvchining paroli (kamida 6 ta belgi)",
+        minLength: 6,
+        required: true
+    })
+    @IsNotEmpty()
+    @MinLength(6)
+    conifirmPassword: string;
 }
 
 export class VerifyOtpDto {

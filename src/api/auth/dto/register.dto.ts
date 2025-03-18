@@ -1,33 +1,64 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength, MaxLength, Matches, IsDefined } from 'class-validator';
+import { ApiProperty, ApiTags } from "@nestjs/swagger";
+import { IsEmail, IsNotEmpty, Length, MinLength } from "class-validator";
 
+@ApiTags("Auth") // Swagger da "Auth" bo'limiga kiritish
 export class RegisterDto {
     @ApiProperty({
-        example: 'John Doe',
-        description: 'Foydalanuvchining to‘liq ismi',
+        example: "John Doe",
+        description: "Foydalanuvchining to‘liq ismi",
+        required: true
     })
-    @IsString()
     @IsNotEmpty()
     name: string;
 
     @ApiProperty({
-        example: 'example@example.com',
-        description: 'Foydalanuvchi email manzili',
+        example: "user@example.com",
+        description: "Foydalanuvchining elektron pochta manzili",
+        format: "email",
+        required: true
     })
-    @IsEmail({}, { message: 'Email manzil noto‘g‘ri formatda' })
-    @IsNotEmpty()
+    @IsEmail()
     email: string;
 
     @ApiProperty({
-        example: 'StrongPassword123!',
-        description: 'Foydalanuvchi paroli',
+        example: "User1234!",
+        description: "Foydalanuvchining paroli (kamida 6 ta belgi)",
+        minLength: 6,
+        required: true
     })
-    @IsString()
-    @MinLength(6, { message: 'Parol kamida 8 ta belgidan iborat bo‘lishi kerak' })
-    @MaxLength(32, { message: 'Parol maksimal 32 ta belgidan oshmasligi kerak' })
-    @Matches(/(?=.*[a-z])/, { message: 'Parolda kamida bitta kichik harf bo‘lishi kerak' })
-    // @Matches(/(?=.*[A-Z])/, { message: 'Parolda kamida bitta katta harf bo‘lishi kerak' })
-    @Matches(/(?=.*\d)/, { message: 'Parolda kamida bitta raqam bo‘lishi kerak' })
     @IsNotEmpty()
+    @MinLength(6)
     password: string;
+
+    @ApiProperty({
+        example: "User1234!",
+        description: "Foydalanuvchining paroli (kamida 6 ta belgi)",
+        minLength: 6,
+        required: true
+    })
+    @IsNotEmpty()
+    @MinLength(6)
+    conifirmPassword: string;
+}
+
+export class VerifyOtpDto {
+    @ApiProperty({
+        example: "user@example.com",
+        description: "Foydalanuvchining elektron pochta manzili",
+        format: "email",
+        required: true
+    })
+    @IsEmail()
+    email: string;
+
+    @ApiProperty({
+        example: "123456",
+        description: "Foydalanuvchiga yuborilgan 6 xonali OTP kod",
+        minLength: 6,
+        maxLength: 6,
+        required: true
+    })
+    @IsNotEmpty()
+    @Length(6, 6)
+    otp: string;
 }

@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Paklarni o'rnatish
-RUN npm install --legacy-peer-deps
+RUN npm install --force
 
 # Loyihani nusxalash
 COPY . .

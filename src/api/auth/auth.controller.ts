@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { ApiBody, ApiTags, ApiResponse, ApiBearerAuth } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { RegisterDto } from "./dto/register.dto";
+import { RegisterDto, VerifyOtpDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RefreshTokenDto } from "./dto/refresh-token.dto";
 import { ForgotPasswordDto, ResetPasswordDto, ResetPasswordWithTokenDto, UpdatePasswordDto } from "./dto/update-password.dto";
@@ -13,16 +13,35 @@ import { Public } from "src/common/decorator/public";
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
-    // **1️⃣ Foydalanuvchini ro‘yxatdan o‘tkazish**
+
+    // @Post("register")
+    // @Public()
+    // @ApiBody({ type: RegisterDto })
+    // @ApiResponse({ status: 201, description: "User registered successfully." })
+    // @ApiResponse({ status: 400, description: "Bad Request." })
+    // async register(@Body() registerDto: RegisterDto) {
+    //     return this.authService.register(registerDto);
+    // }
+
+
+    // **1️⃣ Ro‘yxatdan o‘tish (OTP yuborish)**
     @Post("register")
     @Public()
     @ApiBody({ type: RegisterDto })
-    @ApiResponse({ status: 201, description: "User registered successfully." })
-    @ApiResponse({ status: 400, description: "Bad Request." })
+    @ApiResponse({ status: 201, description: "OTP sent to email. Please verify." })
     async register(@Body() registerDto: RegisterDto) {
         return this.authService.register(registerDto);
     }
 
+    // **2️⃣ OTP-ni tasdiqlash va ro‘yxatdan o‘tkazish**
+    @Post("verify-otp")
+    @Public()
+    @ApiBody({ type: VerifyOtpDto })
+    @ApiResponse({ status: 200, description: "User registered successfully." })
+    @ApiResponse({ status: 401, description: "Invalid OTP." })
+    async verifyOtp(@Body() { email, otp }: VerifyOtpDto) {
+        return this.authService.verifyOtp(email, otp);
+    }
     // **2️⃣ Login qilish**
     @Post("login")
     @Public()
@@ -32,7 +51,7 @@ export class AuthController {
     async login(@Body() { email, password }: LoginDto) {
         return this.authService.login(email, password);
     }
-    
+
 
     @Post("login-organization")
     @Public()
@@ -43,7 +62,7 @@ export class AuthController {
         return this.authService.loginOrganization(email, password);
     }
 
-    
+
 
     @Post("refresh")
     @Public()
@@ -53,7 +72,7 @@ export class AuthController {
     async refreshToken(@Body() { refreshToken }: RefreshTokenDto) {
         return this.authService.refreshToken(refreshToken);
     }
-    
+
 
     @Put("update-password")
     @ApiBearerAuth('access-token')
@@ -76,7 +95,7 @@ export class AuthController {
         return this.authService.forgotPassword(email);
     }
 
-    
+
 
     @Put("reset-password")
     @Public()

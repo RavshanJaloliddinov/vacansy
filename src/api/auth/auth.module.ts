@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -8,9 +8,10 @@ import { UserEntity } from 'src/core/entity/user.entity';
 import { config } from 'src/config';
 import { BcryptEncryption } from 'src/infrastructure/bcrypt';
 import { RedisModule } from 'src/infrastructure/redis/redis.module';
-import { MailModule } from 'src/infrastructure/mail/mail.module';
 import { CustomMailerService } from 'src/infrastructure/mail/mail.service';
 import { OrganizationEntity } from 'src/core/entity';
+import { OrganizationService } from '../organization/organization.service';
+import { OrganizationModule } from '../organization/organization.module';
 import { RedisCacheService } from 'src/infrastructure/redis/redis.service';
 @Module({
   imports: [
@@ -21,8 +22,9 @@ import { RedisCacheService } from 'src/infrastructure/redis/redis.service';
       signOptions: { expiresIn: config.ACCESS_TOKEN_EXPIRED_TIME },
     }),
     RedisModule,
+    OrganizationModule
   ],
   providers: [AuthService, BcryptEncryption, CustomMailerService, RedisCacheService],
   controllers: [AuthController],
 })
-export class AuthModule { }
+export class AuthModule { } 

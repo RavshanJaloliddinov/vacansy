@@ -46,7 +46,7 @@ export class AuthService {
     // **1️⃣ Ro‘yxatdan o‘tish (OTP yuborish)**
     async register(registerDto: RegisterDto) {
         const { email, password, conifirmPassword, name } = registerDto;
-
+        console.log(registerDto)
         if (password !== conifirmPassword) {
             throw new BadRequestException("Password and Confirm Password do not match");
         }
@@ -67,6 +67,7 @@ export class AuthService {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
         // Redis-ga foydalanuvchi ma'lumotlari bilan OTP saqlash (10 daqiqa)
+        console.log(registerDto)
         await this.redisService.set(`register_otp:${email}`, JSON.stringify({ name, email, password, otp }), 600);
 
         // OTP-ni email orqali yuborish
@@ -86,7 +87,7 @@ export class AuthService {
         }
 
         const { name, password, otp: savedOtp } = JSON.parse(data);
-        
+
         // if (!password) {
         //     throw new BadRequestException("Password is missing in OTP verification.");
         // }

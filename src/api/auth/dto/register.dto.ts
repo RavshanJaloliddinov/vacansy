@@ -18,6 +18,7 @@ export class RegisterDto {
         required: true
     })
     @IsEmail()
+    @IsNotEmpty()
     email: string;
 
     @ApiProperty({

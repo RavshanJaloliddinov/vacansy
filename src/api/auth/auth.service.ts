@@ -86,10 +86,10 @@ export class AuthService {
         }
 
         const { name, password, otp: savedOtp } = JSON.parse(data);
-
-        if (!password) {
-            throw new BadRequestException("Password is missing in OTP verification.");
-        }
+        
+        // if (!password) {
+        //     throw new BadRequestException("Password is missing in OTP verification.");
+        // }
 
         if (savedOtp !== otp) {
             throw new UnauthorizedException("Invalid OTP.");

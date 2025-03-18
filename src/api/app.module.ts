@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from 'src/config';
-import { ApplicationEntity, CertificateEntity, ContributionHistoryEntity, EducationEntity, OpportunityEntity, OrganizationEntity, SkillEntity, SubscriptionEntity, UserEntity } from 'src/core/entity';
+import { ApplicationEntity, CertificateEntity, ContributionEntity, EducationEntity, OpportunityEntity, OrganizationEntity, SkillEntity, SubscriptionEntity, UserEntity } from 'src/core/entity';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from 'src/infrastructure/mail/mail.module';
 import { UserModule } from './user/user.module';
@@ -14,6 +14,7 @@ import { OrganizationModule } from './organization/organization.module';
 import { SkillModule } from './skill/skill.module';
 import { ApplicationModule } from './application/application.module';
 import { OpportunityModule } from './opportunity/opportunity.module';
+import { ContributionHistoryModule } from './contribution-history/contribution.module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { OpportunityModule } from './opportunity/opportunity.module';
       type: 'postgres',
       url: config.DB_URL,
       synchronize: true,
-      entities: [UserEntity, ApplicationEntity, CertificateEntity, ContributionHistoryEntity, EducationEntity, OpportunityEntity, OrganizationEntity, SkillEntity, SubscriptionEntity],
+      entities: [UserEntity, ApplicationEntity, CertificateEntity, ContributionEntity, EducationEntity, OpportunityEntity, OrganizationEntity, SkillEntity, SubscriptionEntity],
       ssl: false
     }),
     AuthModule,
@@ -33,6 +34,7 @@ import { OpportunityModule } from './opportunity/opportunity.module';
     SkillModule,
     ApplicationModule,
     OpportunityModule,
+    ContributionHistoryModule,
   ],
   providers: [
     JwtStrategy,

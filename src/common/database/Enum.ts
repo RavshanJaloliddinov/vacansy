@@ -3,6 +3,7 @@ export enum UserRoles {
     USER = "user",
     SUPER_ADMIN = "super_admin",
     MODERATOR = 'moderator',
+    ORGANIZATION = 'organization'
 }
 
 export enum EducationEnum {

@@ -8,6 +8,7 @@ import {
   Body,
   UploadedFile,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CertificateService } from './certificate.service';
@@ -16,6 +17,9 @@ import { UpdateCertificateDto } from './dto/update-certificate.dto';
 import { CurrentUser } from 'src/common/decorator/current-user';
 import { UserEntity } from 'src/core/entity';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserRoles } from 'src/common/database/Enum';
+import { RolesGuard } from '../auth/roles/RoleGuard';
+import { RolesDecorator } from '../auth/roles/RolesDecorator';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Certificates')
@@ -24,6 +28,8 @@ export class CertificateController {
   constructor(private readonly certificateService: CertificateService) { }
 
   @Post()
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.USER)
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Yangi sertifikat yaratish' })
@@ -36,6 +42,8 @@ export class CertificateController {
   }
 
   @Get()
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.USER)
   @ApiOperation({ summary: 'Foydalanuvchining barcha sertifikatlarini olish' })
   @ApiResponse({ status: 200, description: 'Sertifikatlar ro‘yxati' })
   async findAll(@CurrentUser() user: UserEntity) {
@@ -43,6 +51,8 @@ export class CertificateController {
   }
 
   @Get(':id')
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.USER)
   @ApiOperation({ summary: 'Bitta sertifikatni olish' })
   @ApiResponse({ status: 200, description: 'Topilgan sertifikat' })
   @ApiResponse({ status: 404, description: 'Sertifikat topilmadi' })
@@ -54,6 +64,8 @@ export class CertificateController {
   }
 
   @Patch(':id')
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.USER)
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Sertifikatni yangilash' })
@@ -67,6 +79,8 @@ export class CertificateController {
   }
 
   @Delete(':id')
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.USER)
   @ApiOperation({ summary: 'Sertifikatni o‘chirish' })
   @ApiResponse({ status: 200, description: 'Sertifikat muvaffaqiyatli o‘chirildi' })
   @ApiResponse({ status: 404, description: 'Sertifikat topilmadi' })

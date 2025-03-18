@@ -3,7 +3,7 @@ import { ApplicationEntity } from './application.entity';
 import { SkillEntity } from './skill.entity';
 import { CertificateEntity } from './certificate.entity';
 import { EducationEntity } from './education.entity';
-import { ContributionHistoryEntity } from './contribution-history.entity';
+import { ContributionEntity } from './contribution-history.entity';
 import { BaseEntity } from 'src/common/database/BaseEntity';
 import { UserRoles } from 'src/common/database/Enum';
 
@@ -37,6 +37,6 @@ export class UserEntity extends BaseEntity {
   @OneToMany(() => EducationEntity, (education) => education.user)
   education: EducationEntity[];
 
-  @OneToMany(() => ContributionHistoryEntity, (contribution) => contribution.user)
-  contributions: ContributionHistoryEntity[];
+  @OneToMany(() => ContributionEntity, (contribution) => contribution.user)
+  contributions: ContributionEntity[];
 }

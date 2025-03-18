@@ -1,30 +1,28 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { OrganizationEntity } from "./organization.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 import { BaseEntity } from "src/common/database/BaseEntity";
 
 @Entity()
-export class ContributionHistoryEntity extends BaseEntity {
-
-    @ManyToOne(() => OrganizationEntity)
-    @JoinColumn({ name: 'organization_id' })
-    organization: OrganizationEntity;
-
-    @Column({ type: 'enum', enum: ['basic', 'premium', 'enterprise'] })
-    plan_type: string;
-
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
-    price: number;
-
-    @Column({ type: 'timestamp' })
-    start_date: Date;
-
-    @Column({ type: 'timestamp' })
-    end_date: Date;
-
-    @Column({ type: 'enum', enum: ['active', 'expired', 'canceled'], default: 'active' })
-    status: string;
+export class ContributionEntity extends BaseEntity {
 
     @ManyToOne(() => UserEntity, (user) => user.id)
     user: UserEntity;
+
+    @Column({ type: 'varchar', length: 255 })
+    company_name: string;  
+
+    @Column({ type: 'varchar', length: 100 })
+    position: string; 
+
+    @Column({ type: 'text', nullable: true })
+    description: string;  
+
+    @Column({ type: 'timestamp' })
+    start_date: Date;  
+
+    @Column({ type: 'timestamp', nullable: true })
+    end_date: Date; 
+
+    @Column({ type: 'boolean', default: false })
+    is_current: boolean;  
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Put, Body, Delete, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Put, Body, Delete, Patch, Post, UploadedFile, UseInterceptors, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from 'src/core/entity';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,6 +6,9 @@ import { CurrentUser } from 'src/common/decorator/current-user';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { RolesGuard } from '../auth/roles/RoleGuard';
+import { RolesDecorator } from '../auth/roles/RolesDecorator';
+import { UserRoles } from 'src/common/database/Enum';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Users')
@@ -14,6 +17,8 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Post('create/:id')
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.SUPER_ADMIN)
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'User successfully created', type: UserEntity })
   @ApiResponse({ status: 400, description: 'Bad request' })
@@ -27,7 +32,9 @@ export class UserController {
     return this.userService.create(createUserDto, user.id, imageFile);
   }
 
-  @Get('get/all') 
+  @Get('get/all')
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR, UserRoles.ADMIN)
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully', type: [UserEntity] })
   @ApiResponse({ status: 500, description: 'Internal server error' })
@@ -36,6 +43,8 @@ export class UserController {
   }
 
   @Patch('update/:id')
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.SUPER_ADMIN)
   @ApiOperation({ summary: 'Update user details' })
   @UseInterceptors(FileInterceptor('image')) // Handle file upload
   @ApiResponse({ status: 200, description: 'User successfully updated', type: UserEntity })
@@ -56,6 +65,8 @@ export class UserController {
   }
 
   @Delete('remove/:id')
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 200, description: 'User successfully removed' })
   @ApiResponse({ status: 404, description: 'User not found' })
@@ -85,7 +96,7 @@ export class UserController {
   })
   @UseInterceptors(FileInterceptor('image')) // Handle file upload
   async updateProfile(
-    @CurrentUser() user: UserEntity, 
+    @CurrentUser() user: UserEntity,
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() imageFile: Express.Multer.File, // Uploaded file will be available here
   ) {

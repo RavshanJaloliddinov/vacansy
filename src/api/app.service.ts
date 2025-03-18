@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { config } from 'src/config';
@@ -29,6 +29,13 @@ export class Application {
         'access-token'
       )
       .build()
+
+    app.useGlobalPipes(new ValidationPipe({
+      whitelist: true,  // Faqat DTO ichidagi maydonlarni qabul qiladi, ortiqcha maydonlarni o‘chirib tashlaydi
+      forbidNonWhitelisted: true,  // Ortib ketgan maydonlar bo‘lsa xatolik qaytaradi
+      transform: true, // String qiymatlarni avtomatik mos tipga o‘zgartiradi (masalan, number yoki boolean)
+    }));
+
 
     const document = SwaggerModule.createDocument(app, swagger)
     SwaggerModule.setup('api', app, document)

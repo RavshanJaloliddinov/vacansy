@@ -46,18 +46,27 @@ export class AuthService {
     // **1️⃣ Ro‘yxatdan o‘tish (OTP yuborish)**
     async register(registerDto: RegisterDto) {
         const { email, password, conifirmPassword, name } = registerDto;
-        const existingUser = await this.userRepository.findOne({ where: { email, is_deleted: false } });
-        if(password !== conifirmPassword){
+
+        if (password !== conifirmPassword) {
             throw new BadRequestException("Password and Confirm Password do not match");
         }
+
+        const existingUser = await this.userRepository.findOne({ where: { email, is_deleted: false } });
         if (existingUser) {
             throw new ConflictException("Email already registered.");
+        }
+
+        // Redisda mavjud ma'lumotni tekshirish
+        const existingOtpData = await this.redisService.get(`register_otp:${email}`);
+        if (existingOtpData) {
+            // Eski ma'lumotni o‘chirish
+            await this.redisService.deleteByText(`register_otp:${email}`);
         }
 
         // OTP yaratish
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // Redis-ga foydalanuvchi malumotlari bilan OTP saqlash (10 daqiqa)
+        // Redis-ga foydalanuvchi ma'lumotlari bilan OTP saqlash (10 daqiqa)
         await this.redisService.set(`register_otp:${email}`, JSON.stringify({ name, email, password, otp }), 600);
 
         // OTP-ni email orqali yuborish
@@ -65,6 +74,7 @@ export class AuthService {
 
         return { message: "OTP sent to email. Please verify." };
     }
+
 
     // **2️⃣ OTP tasdiqlash va ro‘yxatdan o‘tkazish**
     async verifyOtp(email: string, otp: string) {
@@ -76,6 +86,10 @@ export class AuthService {
         }
 
         const { name, password, otp: savedOtp } = JSON.parse(data);
+
+        if (!password) {
+            throw new BadRequestException("Password is missing in OTP verification.");
+        }
 
         if (savedOtp !== otp) {
             throw new UnauthorizedException("Invalid OTP.");

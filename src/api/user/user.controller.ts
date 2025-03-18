@@ -17,8 +17,8 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Post('create/:id')
-  @UseGuards(RolesGuard)
-  @RolesDecorator(UserRoles.SUPER_ADMIN)
+  // @UseGuards(RolesGuard)
+  // @RolesDecorator(UserRoles.SUPER_ADMIN)
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'User successfully created', type: UserEntity })
   @ApiResponse({ status: 400, description: 'Bad request' })
@@ -33,8 +33,8 @@ export class UserController {
   }
 
   @Get('get/all')
-  @UseGuards(RolesGuard)
-  @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR, UserRoles.ADMIN)
+  // @UseGuards(RolesGuard)
+  // @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR, UserRoles.ADMIN)
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully', type: [UserEntity] })
   @ApiResponse({ status: 500, description: 'Internal server error' })
@@ -43,8 +43,8 @@ export class UserController {
   }
 
   @Patch('update/:id')
-  @UseGuards(RolesGuard)
-  @RolesDecorator(UserRoles.SUPER_ADMIN)
+  // @UseGuards(RolesGuard)
+  // @RolesDecorator(UserRoles.SUPER_ADMIN)
   @ApiOperation({ summary: 'Update user details' })
   @UseInterceptors(FileInterceptor('image')) // Handle file upload
   @ApiResponse({ status: 200, description: 'User successfully updated', type: UserEntity })
@@ -65,8 +65,8 @@ export class UserController {
   }
 
   @Delete('remove/:id')
-  @UseGuards(RolesGuard)
-  @RolesDecorator(UserRoles.SUPER_ADMIN)
+  // @UseGuards(RolesGuard)
+  // @RolesDecorator(UserRoles.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 200, description: 'User successfully removed' })
   @ApiResponse({ status: 404, description: 'User not found' })

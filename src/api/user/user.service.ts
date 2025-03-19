@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { UserEntity } from 'src/core/entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileService } from 'src/infrastructure/file';
+import { QueryHelperService } from 'src/infrastructure/query/query-helper';
+import { PaginationDto } from 'src/infrastructure/query/dto/pagination.dto';
+import { FilterDto } from 'src/infrastructure/query/dto/filter.dto';
 
 @Injectable()
 export class UserService {
@@ -12,6 +15,7 @@ export class UserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly fileService: FileService,
+    private readonly queryHelper: QueryHelperService,
   ) { }
 
   async create(createUserDto: CreateUserDto, currentUserId: string, imageFile: Express.Multer.File): Promise<any> {
@@ -38,10 +42,14 @@ export class UserService {
     }
   }
 
-  async findAll(): Promise<any> {
+  async findAll(paginationDto: PaginationDto, filterDto?: FilterDto): Promise<any> {
     try {
-      const users = await this.userRepository.find();
-      return { status: 'success', data: users, message: 'Users retrieved successfully' };
+      const queryBuilder: SelectQueryBuilder<UserEntity> = this.userRepository.createQueryBuilder('user');
+
+      // Foydalanuvchi qidirmoqchi bo'lgan ustunlar
+      const searchFields = ['user.name', 'user.email'];
+
+      return await QueryHelperService.paginateAndFilter(queryBuilder, paginationDto, filterDto, searchFields);
     } catch (error) {
       throw new InternalServerErrorException('Error retrieving users: ' + error.message);
     }
@@ -58,7 +66,7 @@ export class UserService {
         throw new NotFoundException('User not found');
       }
 
-      return { status: 'success', data: user, message: 'User retrieved with relations' };
+      return { status: 200, data: user, message: 'User retrieved with relations' };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error; // Rethrow if it's a NotFoundException
@@ -75,7 +83,7 @@ export class UserService {
         throw new NotFoundException('User not found');
       }
 
-      return { status: 'success', data: user, message: 'User retrieved successfully' };
+      return { status: 200, data: user, message: 'User retrieved successfully' };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error; // Rethrow if it's a NotFoundException
@@ -106,7 +114,7 @@ export class UserService {
 
       const updatedUser = await this.userRepository.findOne({ where: { id } });
 
-      return { status: 'success', data: updatedUser, message: 'User successfully updated' };
+      return { status: 201, data: updatedUser, message: 'User successfully updated' };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error; // Rethrow if it's a NotFoundException
@@ -137,7 +145,7 @@ export class UserService {
 
       const updatedUser = await this.userRepository.findOne({ where: { id } });
 
-      return { status: 'success', data: updatedUser, message: 'User successfully updated' };
+      return { status: 200, data: updatedUser, message: 'User successfully updated' };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error; // Rethrow if it's a NotFoundException
@@ -160,7 +168,7 @@ export class UserService {
 
       await this.userRepository.save(user);
 
-      return { status: 'success', data: null, message: 'User successfully soft-deleted' };
+      return { status: 200, data: null, message: 'User successfully soft-deleted' };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error; // Rethrow if it's a NotFoundException

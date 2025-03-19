@@ -1,14 +1,17 @@
-import { Controller, Get, Param, Put, Body, Delete, Patch, Post, UploadedFile, UseInterceptors, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Put, Body, Delete, Patch, Post, UploadedFile, UseInterceptors, UseGuards, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from 'src/core/entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CurrentUser } from 'src/common/decorator/current-user';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiConsumes, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from '../auth/roles/RoleGuard';
 import { RolesDecorator } from '../auth/roles/RolesDecorator';
 import { UserRoles } from 'src/common/database/Enum';
+import { FilterDto } from 'src/infrastructure/query/dto/filter.dto';
+import { PaginationDto } from 'src/infrastructure/query/dto/pagination.dto';
+import path from 'path';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Users')
@@ -32,14 +35,17 @@ export class UserController {
     return this.userService.create(createUserDto, user.id, imageFile);
   }
 
-  @Get('get/all')
-  // @UseGuards(RolesGuard)
-  // @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR, UserRoles.ADMIN)
-  @ApiOperation({ summary: 'Get all users' })
+  @Get()
+  @ApiOperation({ summary: 'Get all users with pagination and filtering' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully', type: [UserEntity] })
-  @ApiResponse({ status: 500, description: 'Internal server error' })
-  async getAllUsers(@CurrentUser() user: UserEntity) {
-    return this.userService.findAll();
+  async getAllUsers(
+    @Query() paginationDto: PaginationDto,
+    @Query() filterDto: FilterDto
+  ) {
+    return this.userService.findAll(paginationDto, filterDto);
   }
 
   @Patch('update/:id')

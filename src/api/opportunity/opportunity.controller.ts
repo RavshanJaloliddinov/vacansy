@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, Param, UseGuards, Query } from '@nestjs/common';
 import { OpportunityService } from './opportunity.service';
 import { CreateOpportunityDto } from './dto/create-opportunity.dto';
 import { CurrentUser } from 'src/common/decorator/current-user';
@@ -7,6 +7,8 @@ import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagg
 import { RolesGuard } from '../auth/roles/RoleGuard';
 import { RolesDecorator } from '../auth/roles/RolesDecorator';
 import { UserRoles } from 'src/common/database/Enum';
+import { PaginationDto } from 'src/infrastructure/query/dto/pagination.dto';
+import { FilterDto } from 'src/infrastructure/query/dto/filter.dto';
 
 @ApiTags('Opportunities')
 @ApiBearerAuth('access-token')
@@ -31,8 +33,12 @@ export class OpportunityController {
   @UseGuards(RolesGuard)
   @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR)
   @Get()
-  async findAllByOrganization(@CurrentUser() organization: OrganizationEntity) {
-    return this.opportunityService.findAllByOrganization(organization.id);
+  async findAllByOrganization(
+    @CurrentUser() organization: OrganizationEntity,
+    @Query() paginationDto: PaginationDto,
+    @Query() filterDto?: FilterDto
+  ) {
+    return this.opportunityService.findAllByOrganization(organization.id, paginationDto, filterDto);
   }
 
   @ApiOperation({ summary: 'Get opportunities by users' })
@@ -40,9 +46,13 @@ export class OpportunityController {
   @UseGuards(RolesGuard)
   @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR)
   @Get('all')
-  async findAll() {
-    return this.opportunityService.findAll();
+  async findAll(
+    @Query() paginationDto: PaginationDto,
+    @Query() filterDto?: FilterDto
+  ) {
+    return this.opportunityService.findAll(paginationDto, filterDto);
   }
+
 
   @ApiOperation({ summary: 'Update an opportunity (Organization only)' })
   @ApiResponse({ status: 200, description: 'Opportunity updated successfully' })

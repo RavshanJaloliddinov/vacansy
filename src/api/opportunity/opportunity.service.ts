@@ -4,6 +4,9 @@ import { Repository } from 'typeorm';
 import { OpportunityEntity } from 'src/core/entity/opportunity.entity';
 import { CreateOpportunityDto } from './dto/create-opportunity.dto';
 import { OrganizationEntity } from 'src/core/entity/organization.entity';
+import { FilterDto } from 'src/infrastructure/query/dto/filter.dto';
+import { PaginationDto } from 'src/infrastructure/query/dto/pagination.dto';
+import { QueryHelperService } from 'src/infrastructure/query/query-helper';
 
 @Injectable()
 export class OpportunityService {
@@ -30,13 +33,26 @@ export class OpportunityService {
   }
 
 
-  async findAllByOrganization(organizationId: string): Promise<OpportunityEntity[]> {
-    return await this.opportunityRepository.find({
-      where: { organization: { id: organizationId } },
-    });
+  async findAllByOrganization(
+    organizationId: string,
+    paginationDto: PaginationDto,
+    filterDto?: FilterDto
+  ): Promise<any> {
+    const queryBuilder = this.opportunityRepository
+      .createQueryBuilder('opportunity')
+      .where('opportunity.organizationId = :organizationId', { organizationId });
+
+    const searchFields = ['opportunity.title', 'opportunity.description'];
+
+    return await QueryHelperService.paginateAndFilter(queryBuilder, paginationDto, filterDto, searchFields);
   }
-  async findAll(): Promise<OpportunityEntity[]> {
-    return await this.opportunityRepository.find();
+
+  async findAll(paginationDto: PaginationDto, filterDto?: FilterDto): Promise<any> {
+    const queryBuilder = this.opportunityRepository.createQueryBuilder('opportunity');
+
+    const searchFields = ['opportunity.title', 'opportunity.description'];
+
+    return await QueryHelperService.paginateAndFilter(queryBuilder, paginationDto, filterDto, searchFields);
   }
 
 
@@ -69,7 +85,7 @@ export class OpportunityService {
       throw new NotFoundException('Opportunity not found');
     }
 
-    opportunity.deleted_at = new Date(); 
+    opportunity.deleted_at = new Date();
     opportunity.deleted_by = organizationId;
     opportunity.is_deleted = true;
 

@@ -75,7 +75,7 @@ export class UserController {
   // @RolesDecorator(UserRoles.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 200, description: 'User successfully removed' })
-  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 404, description: 'User not found' }) 
   async deleteUser(
     @Param('id') id: string,
     @CurrentUser() user: UserEntity,

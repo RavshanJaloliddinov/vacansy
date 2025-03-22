@@ -36,7 +36,7 @@ export class UserService {
       user.created_by = currentUserId;
       await this.userRepository.save(user);
 
-      return { status: 'success', data: user, message: 'User successfully created' };
+      return { status: 201, data: user, message: 'User successfully created' };
     } catch (error) {
       throw new InternalServerErrorException('Error creating user: ' + error.message);
     }

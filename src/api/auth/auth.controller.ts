@@ -7,6 +7,8 @@ import { RefreshTokenDto } from "./dto/refresh-token.dto";
 import { ForgotPasswordDto, ResetPasswordDto, ResetPasswordWithTokenDto, UpdatePasswordDto } from "./dto/update-password.dto";
 import { JwtAuthGuard } from "./users/AuthGuard";
 import { Public } from "src/common/decorator/public";
+import { CurrentUser } from "src/common/decorator/current-user";
+import { UserEntity } from "src/core/entity";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -103,21 +105,26 @@ export class AuthController {
     @ApiResponse({ status: 200, description: "Password reset successfully." })
     @ApiResponse({ status: 401, description: "Invalid OTP." })
     @ApiResponse({ status: 400, description: "Invalid or expired reset token." })
-    async resetPassword(@Body() { otp, resetToken }: ResetPasswordDto) {
-        return this.authService.resetPassword(resetToken, otp);
+    async resetPassword(@Body() { otp, email }: ResetPasswordDto) {
+        return this.authService.resetPassword(email, otp);
     }
 
 
 
-    @Put("update-password-with-token")
-    @Public()
-    @ApiBody({
-        description: "Update password using the reset token",
-        type: ResetPasswordWithTokenDto,
-    })
-    @ApiResponse({ status: 200, description: "Password updated successfully." })
-    @ApiResponse({ status: 401, description: "Invalid password update token." })
-    async updatePasswordWithToken(@Body() resetPasswordDto: ResetPasswordWithTokenDto) {
-        return this.authService.updatePasswordWithToken(resetPasswordDto);
-    }
+    // @Put("update-password-with-token")
+    // @ApiBearerAuth('access-token')
+    // @Public()
+    // @ApiBody({
+    //     description: "Update password using the reset token",
+    //     type: ResetPasswordWithTokenDto,
+    // })
+    // @ApiResponse({ status: 200, description: "Password updated successfully." })
+    // @ApiResponse({ status: 401, description: "Invalid password update token." })
+    // async updatePasswordWithToken(
+    //     @Body() resetPasswordDto: ResetPasswordWithTokenDto,
+    //     @CurrentUser() user: UserEntity
+    // ) {
+    //     console.log(user)
+    //     return this.authService.updatePasswordWithToken(resetPasswordDto, user);
+    // }
 }

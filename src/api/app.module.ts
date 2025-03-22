@@ -28,7 +28,7 @@ import { ContributionHistoryModule } from './contribution-history/contribution.m
     AuthModule,
     MailModule,
     UserModule,
-    CertificateModule,
+    CertificateModule, 
     EducationModule,
     OrganizationModule,
     SkillModule,

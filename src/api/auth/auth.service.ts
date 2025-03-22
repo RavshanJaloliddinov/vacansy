@@ -171,20 +171,14 @@ export class AuthService {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
         // Save OTP in Redis with 10-minute TTL
-        await this.redisService.set(`reset_otp:${email}`, otp, 600); // 10 minutes
+        await this.redisService.set(`reset_otp:${email}`, otp, 180); // 3 minutes
 
-        // Generate a temporary reset token for password update (valid for 10 minutes)
-        const resetToken = this.jwtService.sign({ email }, {
-            secret: config.ACCESS_TOKEN_SECRET_KEY,
-            expiresIn: '10m',
-        });
 
         // Send OTP via email
         await this.customMailerService.sendPasswordResetEmail(email, otp);
 
         return {
-            message: "OTP sent to email.",
-            resetToken, // Send the resetToken to the user
+            message: "OTP sent to email."
         };
     }
 

@@ -1,13 +1,14 @@
-# Image tanlash
+# Node.js bazasi
 FROM node:18-alpine
 
-# Ishchi katalog yaratish
+# Redis o'rnatish
+RUN apk add --no-cache redis
+
+# Ishchi katalog
 WORKDIR /app
 
 # Fayllarni nusxalash
 COPY package*.json ./
-
-# Paklarni o'rnatish
 RUN npm install --force
 
 # Loyihani nusxalash
@@ -16,8 +17,8 @@ COPY . .
 # Loyihani qurish
 RUN npm run build
 
-# Portni ochish
+# Port ochish
 EXPOSE 3000
 
-# Loyihani ishga tushirish
-CMD ["npm", "run", "start:dev"]
+# Redis va NestJS`ni ishga tushirish
+CMD redis-server --daemonize yes && npm run start:dev

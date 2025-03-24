@@ -17,7 +17,7 @@ export class Application {
     app.use("/images", express.static(join(process.cwd(), "uploads")));
 
     const swagger = new DocumentBuilder()
-      .setTitle('Vacany backend') 
+      .setTitle('Vacany backend')
       .setDescription('11')
       .setVersion('1.0')
       .addBearerAuth(
@@ -45,4 +45,3 @@ export class Application {
     })
   }
 }
- 

@@ -71,7 +71,7 @@ export class UserController {
   }
 
   @Delete('remove/:id')
-  // @UseGuards(RolesGuard)
+  // @UseGuards(RolesGuard) 
   // @RolesDecorator(UserRoles.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 200, description: 'User successfully removed' })

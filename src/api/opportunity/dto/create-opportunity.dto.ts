@@ -27,6 +27,15 @@ export class CreateOpportunityDto {
     @IsEnum(Category)
     category: Category;
 
+    @ApiProperty({
+        description: 'Profile image of the user (optional)',
+        type: 'string',
+        format: 'binary',
+        required: false,
+    })
+    @IsOptional()
+    image?: Express.Multer.File;
+
     @ApiProperty({ example: 'unpaid', description: 'Payment type of the opportunity', enum: PaymentType, required: false })
     @IsEnum(PaymentType)
     @IsOptional()

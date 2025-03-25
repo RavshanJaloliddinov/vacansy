@@ -64,7 +64,14 @@ export class AuthController {
         return this.authService.loginOrganization(email, password);
     }
 
-
+    @Post("login-admin")
+    @Public()
+    @ApiBody({ type: LoginDto })
+    @ApiResponse({ status: 200, description: "Login successful." })
+    @ApiResponse({ status: 401, description: "Unauthorized." })
+    async loginAdmin(@Body() { email, password }: LoginDto) {
+        return this.authService.loginAdmin(email, password);
+    }
 
     @Post("refresh")
     @Public()

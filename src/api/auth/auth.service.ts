@@ -9,6 +9,7 @@ import { OrganizationEntity, UserEntity } from "src/core/entity";
 import { ResetPasswordWithTokenDto, UpdatePasswordDto } from "./dto/update-password.dto";
 import { CustomMailerService } from "src/infrastructure/mail/mail.service";
 import { RedisCacheService } from "src/infrastructure/redis/redis.service";
+import { UserRoles } from "src/common/database/Enum";
 
 @Injectable()
 export class AuthService {
@@ -123,6 +124,21 @@ export class AuthService {
 
         return this.generateTokens(user.id, user.email, user.role);
     }
+
+    async loginAdmin(email: string, password: string) {
+        const user = await this.userRepository.findOne({ where: { email, is_deleted: false, role: UserRoles.SUPER_ADMIN } });
+        if (!user) {
+            throw new UnauthorizedException("Invalid email or password.");
+        }
+
+        const isPasswordValid = await BcryptEncryption.compare(password, user.password);
+        if (!isPasswordValid) {
+            throw new UnauthorizedException("Invalid email or password.");
+        }
+
+        return this.generateTokens(user.id, user.email, user.role);
+    }
+
 
     async loginOrganization(email: string, password: string) {
         const organization = await this.organizationRepository.findOne({ where: { email, is_deleted: false } })

@@ -7,7 +7,7 @@ import { config } from 'src/config';
 @Module({
     imports: [
         ConfigModule,
-        NestRedisModule.forRoot({
+        NestRedisModule.forRoot({ 
             type: 'single',
             url: config.REDIS_URL,
             ...(config.REDIS_URL.startsWith('rediss://') && { tls: {} }), // TLS faqat `rediss://` bo‘lsa qo‘shiladi

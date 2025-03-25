@@ -8,6 +8,7 @@ import { FileService } from 'src/infrastructure/file';
 import { QueryHelperService } from 'src/infrastructure/query/query-helper';
 import { PaginationDto } from 'src/infrastructure/query/dto/pagination.dto';
 import { FilterDto } from 'src/infrastructure/query/dto/filter.dto';
+import { BcryptEncryption } from 'src/infrastructure/bcrypt';
 
 @Injectable()
 export class UserService {
@@ -26,7 +27,9 @@ export class UserService {
         throw new BadRequestException('Email is already in use');
       }
 
-      const user = this.userRepository.create({ ...createUserDto, image: null });
+      const hashedPassword = await BcryptEncryption.encrypt(createUserDto.password)
+
+      const user = this.userRepository.create({ ...createUserDto, image: null, password: hashedPassword });
 
       if (imageFile) {
         const imageFileName = await this.fileService.saveFile(imageFile);

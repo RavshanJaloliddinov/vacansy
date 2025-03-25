@@ -21,7 +21,7 @@ export class OpportunityController {
   @ApiOperation({ summary: 'Create a new opportunity (Organization only)' })
   @ApiResponse({ status: 201, description: 'Opportunity created successfully' })
   @UseGuards(RolesGuard)
-  @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR)
+  @RolesDecorator(UserRoles.SUPER_ADMIN)
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
   @Post()
@@ -36,7 +36,7 @@ export class OpportunityController {
   @ApiOperation({ summary: 'Get opportunities by organization (Organization only)' })
   @ApiResponse({ status: 200, description: 'List of opportunities' })
   @UseGuards(RolesGuard)
-  @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR)
+  @RolesDecorator(UserRoles.SUPER_ADMIN)
   @Get()
   async findAllByOrganization(
     @CurrentUser() organization: OrganizationEntity,
@@ -49,7 +49,7 @@ export class OpportunityController {
   @ApiOperation({ summary: 'Get opportunities by users' })
   @ApiResponse({ status: 200, description: 'List of opportunities' })
   // @UseGuards(RolesGuard)
-  // @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR)
+  // @RolesDecorator(UserRoles.SUPER_ADMIN)
   @Public()
   @Get('all')
   async findAll(
@@ -63,7 +63,7 @@ export class OpportunityController {
   @ApiOperation({ summary: 'Update an opportunity (Organization only)' })
   @ApiResponse({ status: 200, description: 'Opportunity updated successfully' })
   @UseGuards(RolesGuard)
-  @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR)
+  @RolesDecorator(UserRoles.SUPER_ADMIN)
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
   @Patch(':id')
@@ -81,12 +81,59 @@ export class OpportunityController {
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Opportunity not found' })
   @UseGuards(RolesGuard)
-  @RolesDecorator(UserRoles.SUPER_ADMIN, UserRoles.MODERATOR)
+  @RolesDecorator(UserRoles.SUPER_ADMIN)
   @Delete(':id')
   async delete(
     @Param('id') id: string,
     @CurrentUser() organization: OrganizationEntity,
   ) {
     return this.opportunityService.delete(id, organization.id);
+  }
+
+
+
+
+  @ApiOperation({ summary: 'Create a new opportunity (Organization & SUPER_ADMIN)' })
+  @ApiResponse({ status: 201, description: 'Opportunity created successfully' })
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.SUPER_ADMIN)
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @Post('byUser')
+  async createByUser(
+    @UploadedFile() imageFile: Express.Multer.File,
+    @Body() createOpportunityDto: CreateOpportunityDto,
+    @CurrentUser() user: any, 
+  ) {
+    return this.opportunityService.createByUser(createOpportunityDto, user, imageFile);
+  }
+
+
+  @ApiOperation({ summary: 'Update an opportunity (Organization & SUPER_ADMIN)' })
+  @ApiResponse({ status: 200, description: 'Opportunity updated successfully' })
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.SUPER_ADMIN)
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @Patch('byUser:id')
+  async updateByUser(
+    @UploadedFile() imageFile: Express.Multer.File,
+    @Param('id') id: string,
+    @Body() createOpportunityDto: CreateOpportunityDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.opportunityService.updateByUser(id, createOpportunityDto, user, imageFile);
+  }
+
+  @ApiOperation({ summary: 'Delete an opportunity (Organization & SUPER_ADMIN)' })
+  @ApiResponse({ status: 200, description: 'Opportunity deleted successfully' })
+  @UseGuards(RolesGuard)
+  @RolesDecorator(UserRoles.SUPER_ADMIN)
+  @Delete('byUser:id')
+  async deleteByUser(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+  ) {
+    return this.opportunityService.deleteByUser(id, user);
   }
 }

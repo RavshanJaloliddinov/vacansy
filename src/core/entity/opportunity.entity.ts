@@ -18,7 +18,7 @@ export class OpportunityEntity extends BaseEntity {
 
   @Column({ type: 'enum', enum: OpportunityType })
   opportunityType: OpportunityType;
- 
+
   @Column({ type: 'enum', enum: ExperienceLevel })
   experienceLevel: ExperienceLevel;
 
@@ -31,6 +31,9 @@ export class OpportunityEntity extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   image: string
 
-  @ManyToOne(() => OrganizationEntity, (organization) => organization.opportunities, { onDelete: 'CASCADE' })
-  organization: OrganizationEntity;
+  @ManyToOne(() => OrganizationEntity, (organization) => organization.opportunities, {
+    onDelete: 'CASCADE',
+    nullable: true
+  })
+  organization?: OrganizationEntity;
 }

@@ -75,3 +75,9 @@ export enum ApplicationStatus {
     EXPIRED = 'accepted',
     REJECTED = 'rejected'
 }
+
+export enum PaymentStatus {
+    COMPLETED = 'completed',
+    FAILED = 'failed',
+    PENDING = 'pending',
+}

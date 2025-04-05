@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'typeorm';
 import { BaseEntity } from 'src/common/database/BaseEntity';
 import { OpportunityEntity } from './opportunity.entity';
 import { SubscriptionStatus } from 'src/common/database/Enum';
+import { PaymentEntity } from './payment.entity';
+import { SubscriptionEntity } from './subscription.entity';
 
 @Entity()
 export class OrganizationEntity extends BaseEntity {
@@ -29,4 +31,10 @@ export class OrganizationEntity extends BaseEntity {
 
     @OneToMany(() => OpportunityEntity, (opportunity) => opportunity.organization)
     opportunities: OpportunityEntity[];
+
+    @OneToMany(() => PaymentEntity, (payment) => payment.organization, { eager: true })
+    payments: PaymentEntity[];
+
+    @OneToMany(() => SubscriptionEntity, (subscription) => subscription.organization, { eager: true })
+    subscriptions: SubscriptionEntity[];
 }

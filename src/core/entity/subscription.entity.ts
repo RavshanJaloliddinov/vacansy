@@ -1,26 +1,38 @@
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
-import { OrganizationEntity } from "./organization.entity";
-import { BaseEntity } from "src/common/database/BaseEntity";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, BaseEntity } from 'typeorm';
+import { OrganizationEntity } from './organization.entity';
+import { PaymentEntity } from './payment.entity';
 
-@Entity()
+export enum SubscriptionStatus {
+    ACTIVE = 'active',
+    REJECTED = 'rejected',
+    PENDING = 'pending',
+}
+
+@Entity({ name: 'subscriptions' })
 export class SubscriptionEntity extends BaseEntity {
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-    @ManyToOne(() => OrganizationEntity)
-    @JoinColumn({ name: 'organization_id' })
+    @ManyToOne(() => OrganizationEntity, (organization) => organization.subscriptions, {
+        onDelete: 'CASCADE',
+    })
     organization: OrganizationEntity;
 
-    @Column({ type: 'enum', enum: ['basic', 'premium', 'enterprise'] })
-    plan_type: string;
+    @ManyToOne(() => PaymentEntity, (payment) => payment.subscription, {
+        onDelete: 'CASCADE',
+    })
+    payments: PaymentEntity;
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     price: number;
 
-    @Column({ type: 'timestamp' })
-    start_date: Date;
+    @Column({ type: 'int' })
+    count: number;
 
-    @Column({ type: 'timestamp' })
-    end_date: Date;
-
-    @Column({ type: 'enum', enum: ['active', 'expired', 'canceled'], default: 'active' })
-    status: string;
+    @Column({
+        type: 'enum',
+        enum: SubscriptionStatus,
+        default: SubscriptionStatus.ACTIVE,
+    })
+    status: SubscriptionStatus;
 }

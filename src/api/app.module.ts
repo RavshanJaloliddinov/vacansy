@@ -15,6 +15,8 @@ import { SkillModule } from './skill/skill.module';
 import { ApplicationModule } from './application/application.module';
 import { OpportunityModule } from './opportunity/opportunity.module';
 import { ContributionHistoryModule } from './contribution-history/contribution.module';
+import { PaymentEntity } from 'src/core/entity/payment.entity';
+// import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -22,7 +24,7 @@ import { ContributionHistoryModule } from './contribution-history/contribution.m
       type: 'postgres',
       url: config.DB_URL,
       synchronize: true,
-      entities: [UserEntity, ApplicationEntity, CertificateEntity, ContributionEntity, EducationEntity, OpportunityEntity, OrganizationEntity, SkillEntity, SubscriptionEntity],
+      entities: [UserEntity, ApplicationEntity, CertificateEntity, ContributionEntity, EducationEntity, OpportunityEntity, OrganizationEntity, SkillEntity, SubscriptionEntity, PaymentEntity],
       ssl: false
     }),
     AuthModule,
@@ -35,6 +37,7 @@ import { ContributionHistoryModule } from './contribution-history/contribution.m
     ApplicationModule,
     OpportunityModule,
     ContributionHistoryModule,
+    // PaymentModule,
   ],
   providers: [
     JwtStrategy,

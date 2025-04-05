@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, In, LessThanOrEqual, Like, MoreThanOrEqual, Repository } from 'typeorm';
 import { OpportunityEntity } from 'src/core/entity/opportunity.entity';
 import { CreateOpportunityDto } from './dto/create-opportunity.dto';
 import { OrganizationEntity } from 'src/core/entity/organization.entity';
@@ -9,6 +9,8 @@ import { PaginationDto } from 'src/infrastructure/query/dto/pagination.dto';
 import { QueryHelperService } from 'src/infrastructure/query/query-helper';
 import { FileService } from 'src/infrastructure/file';
 import { UserRoles } from 'src/common/database/Enum';
+import { OpportunitySortDto } from 'src/infrastructure/query/dto/opportunity-sort.dto';
+import { OpportunityFilterDto } from 'src/infrastructure/query/dto/opportunity-filter.dto';
 
 @Injectable()
 export class OpportunityService {
@@ -63,14 +65,115 @@ export class OpportunityService {
     return await QueryHelperService.paginateAndFilter(queryBuilder, paginationDto, filterDto, searchFields);
   }
 
-  async findAll(paginationDto: PaginationDto, filterDto?: FilterDto): Promise<any> {
-    const queryBuilder = this.opportunityRepository.createQueryBuilder('opportunity');
+  // async findAll(paginationDto: PaginationDto, filterDto?: FilterDto): Promise<any> {
+  //   const queryBuilder = this.opportunityRepository.createQueryBuilder('opportunity');
 
-    const searchFields = ['opportunity.title', 'opportunity.description'];
+  //   const searchFields = ['opportunity.title', 'opportunity.description'];
 
-    return await QueryHelperService.paginateAndFilter(queryBuilder, paginationDto, filterDto, searchFields);
+  //   return await QueryHelperService.paginateAndFilter(queryBuilder, paginationDto, filterDto, searchFields);
+  // }
+
+  async findAll(
+    pagination?: PaginationDto,
+    filter?: OpportunityFilterDto,
+    sort?: OpportunitySortDto,
+  ) {
+    // Build where clause for filtering
+    const where: FindOptionsWhere<OpportunityEntity> = {};
+
+    if (filter) {
+      if (filter.name) where.name = Like(`%${filter.name}%`);
+      if (filter.location) where.location = Like(`%${filter.location}%`);
+
+      if (filter.opportunityType) {
+        where.opportunityType = In(
+          Array.isArray(filter.opportunityType)
+            ? filter.opportunityType
+            : [filter.opportunityType]
+        );
+      }
+
+      if (filter.experienceLevel) {
+        where.experienceLevel = In(
+          Array.isArray(filter.experienceLevel)
+            ? filter.experienceLevel
+            : [filter.experienceLevel]
+        );
+      }
+
+      if (filter.category) {
+        where.category = In(
+          Array.isArray(filter.category)
+            ? filter.category
+            : [filter.category]
+        );
+      }
+
+      if (filter.paymentType) {
+        where.paymentType = In(
+          Array.isArray(filter.paymentType)
+            ? filter.paymentType
+            : [filter.paymentType]
+        );
+      }
+
+      if (filter.organizationId) {
+        where.organization = { id: filter.organizationId };
+      }
+
+      if (filter.createdAfter) {
+        where.created_at = MoreThanOrEqual(new Date(filter.createdAfter));
+      }
+
+      if (filter.createdBefore) {
+        where.created_at = LessThanOrEqual(new Date(filter.createdBefore));
+      }
+
+      if (filter.updatedAfter) {
+        where.updated_at = MoreThanOrEqual(new Date(filter.updatedAfter));
+      }
+
+      if (filter.updatedBefore) {
+        where.updated_at = LessThanOrEqual(new Date(filter.updatedBefore));
+      }
+    }
+
+    // Build order clause for sorting
+    let order = {};
+    if (sort) {
+      Object.entries(sort).forEach(([key, value]) => {
+        if (value === 'asc' || value === 'desc') {
+          order[key] = value;
+        }
+      });
+    } else {
+      // Default sorting
+      order = { created_at: 'desc' };
+    }
+
+    // Handle pagination
+    const page = pagination?.page || 1;
+    const limit = pagination?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.opportunityRepository.findAndCount({
+      where,
+      order,
+      skip,
+      take: limit,
+      relations: ['organization'],
+    });
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
-
 
   async update(
     id: string,

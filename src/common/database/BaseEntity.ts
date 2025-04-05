@@ -10,7 +10,7 @@ export class BaseEntity {
         type: 'boolean',
         default: true,
     })
-    is_active: boolean;
+    is_active: boolean; 
 
     @Column({
         name: 'is_deleted',

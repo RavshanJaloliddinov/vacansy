@@ -107,7 +107,7 @@ export class OpportunityService {
             ? filter.category
             : [filter.category]
         );
-      }
+      }  
 
       if (filter.paymentType) {
         where.paymentType = In(

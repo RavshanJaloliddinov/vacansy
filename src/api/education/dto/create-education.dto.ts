@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsString, IsDate, IsOptional, IsEnum } from 'class-validator';
 import { EducationEnum } from 'src/common/database/Enum';
 
@@ -15,10 +16,12 @@ export class CreateEducationDto {
   @IsString()
   field_of_study: string;
 
+  @Type(() => Date)
   @ApiProperty({ example: '2020-09-01T00:00:00.000Z', type: 'string', format: 'date-time' })
   @IsDate()
   start_date: Date;
 
+  @Type(() => Date)
   @ApiProperty({ required: false, example: '2024-06-01T00:00:00.000Z', type: 'string', format: 'date-time' })
   @IsOptional()
   @IsDate()
@@ -30,6 +33,6 @@ export class CreateEducationDto {
 
   @ApiProperty({ required: false, example: 'Studied advanced topics in AI and ML' })
   @IsOptional()
-  @IsString() 
+  @IsString()
   description?: string;
 }

@@ -28,7 +28,7 @@ export class CreateEducationDto {
   end_date?: Date;
 
   @ApiProperty({ enum: EducationEnum, default: EducationEnum.FULL_TIME, example: EducationEnum.FULL_TIME })
-  @IsEnum(['full-time', 'part-time', 'online'])
+  @IsEnum(['full_time', 'part_time', 'online'])
   education_type: EducationEnum;
 
   @ApiProperty({ required: false, example: 'Studied advanced topics in AI and ML' })

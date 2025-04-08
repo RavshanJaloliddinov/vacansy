@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsDate, IsOptional, IsUrl } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateCertificateDto {
   @ApiProperty({ example: 'Full-Stack Web Development', description: 'Sertifikat nomi' })
@@ -12,6 +12,7 @@ export class CreateCertificateDto {
   issued_by: string;
 
   @ApiProperty({ example: '2025-01-01', description: 'Berilgan sana', type: 'string', format: 'date' })
+  @Type(() => Date)
   @IsDate()
   issue_date: Date;
 

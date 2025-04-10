@@ -12,6 +12,14 @@ export class CreateUserDto {
   name: string;
 
   @ApiProperty({
+    description: 'Bio of the user',
+    type: String,
+    example: 'Never give up',
+  })
+  @IsString()
+  bio: string;
+
+  @ApiProperty({
     description: 'Email address of the user',
     type: String,
     example: 'johndoe@example.com',

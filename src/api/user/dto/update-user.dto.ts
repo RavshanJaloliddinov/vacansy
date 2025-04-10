@@ -44,11 +44,20 @@ export class UpdateUserDto {
   role?: UserRoles;
 
   @ApiProperty({
+    description: 'Bio of the user',
+    type: String,
+    example: 'Never give up',
+  })
+  @IsString()
+  @IsOptional()
+  bio: string;
+
+  @ApiProperty({
     description: 'Profile image of the user (optional)',
     type: 'string',
     format: 'binary',
     required: false,
   })
   @IsOptional()
-  image?: Express.Multer.File; 
+  image?: Express.Multer.File;
 }

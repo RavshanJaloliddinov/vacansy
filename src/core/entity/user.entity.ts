@@ -25,7 +25,7 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'enum', enum: UserRoles, default: 'user' })
   role: UserRoles;
 
-  @Column({ nullable: true, length: 255 })
+  @Column({ nullable: true, type: 'text' })
   bio: string
 
   @OneToMany(() => ApplicationEntity, (application) => application.user)

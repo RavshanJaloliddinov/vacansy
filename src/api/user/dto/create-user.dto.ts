@@ -1,6 +1,6 @@
-import { IsString, IsEmail, IsEnum, IsOptional } from 'class-validator';
+import { IsString, IsEmail, IsEnum, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRoles } from 'src/common/database/Enum';
+import { Gender, UserRoles } from 'src/common/database/Enum';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -18,6 +18,30 @@ export class CreateUserDto {
   })
   @IsString()
   bio: string;
+
+  @ApiProperty({
+    description: 'Age of the user',
+    type: String,
+    example: 18,
+  })
+  @IsNumber()
+  age: number
+
+  @ApiProperty({
+    description: 'Gender of the user',
+    type: String,
+    example: 18,
+  })
+  @IsEnum(Gender)
+  gender: Gender
+
+  @ApiProperty({
+    description: 'Location of the user',
+    type: String,
+    example: "Samarkand",
+  })
+  @IsString()
+  location: string
 
   @ApiProperty({
     description: 'Email address of the user',
@@ -50,5 +74,5 @@ export class CreateUserDto {
     required: false,
   })
   @IsOptional()
-  image?: Express.Multer.File;  // Optional field for image upload
+  image?: Express.Multer.File;  
 }

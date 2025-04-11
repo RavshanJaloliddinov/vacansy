@@ -12,6 +12,11 @@ export enum EducationEnum {
     ONLINE = 'online'
 }
 
+export enum Gender {
+    MALE = 'male',
+    FEMALE = 'female'
+}
+
 export enum SkillCategory {
     FRONTEND = 'frontend',
     BACKEND = 'backend',

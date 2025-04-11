@@ -5,7 +5,7 @@ import { CertificateEntity } from './certificate.entity';
 import { EducationEntity } from './education.entity';
 import { ContributionEntity } from './contribution-history.entity';
 import { BaseEntity } from 'src/common/database/BaseEntity';
-import { UserRoles } from 'src/common/database/Enum';
+import { Gender, UserRoles } from 'src/common/database/Enum';
 
 @Entity()
 export class UserEntity extends BaseEntity {
@@ -21,6 +21,16 @@ export class UserEntity extends BaseEntity {
 
   @Column({ nullable: true })
   image: string
+
+  @Column({ nullable: true })
+  age: number
+
+  @Column({ nullable: true })
+  gender: Gender
+
+  @Column({ nullable: true })
+  location: string
+
 
   @Column({ type: 'enum', enum: UserRoles, default: 'user' })
   role: UserRoles;

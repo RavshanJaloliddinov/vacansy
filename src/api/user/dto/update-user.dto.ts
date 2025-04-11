@@ -1,6 +1,6 @@
-import { IsString, IsEmail, IsEnum, IsOptional } from 'class-validator';
+import { IsString, IsEmail, IsEnum, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRoles } from 'src/common/database/Enum';
+import { Gender, UserRoles } from 'src/common/database/Enum';
 
 export class UpdateUserDto {
   @ApiProperty({
@@ -12,6 +12,33 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   name?: string;
+
+  @ApiProperty({
+    description: 'Age of the user',
+    type: String,
+    example: 18,
+  })
+  @IsNumber()
+  @IsOptional()
+  age: number
+
+  @ApiProperty({
+    description: 'Gender of the user',
+    type: String,
+    example: 18,
+  })
+  @IsEnum(Gender)
+  @IsOptional()
+  gender: Gender
+
+  @ApiProperty({
+    description: 'Location of the user',
+    type: String,
+    example: "Samarkand",
+  })
+  @IsString()
+  @IsOptional()
+  location: string
 
   @ApiProperty({
     description: 'Email address of the user (optional)',

@@ -17,6 +17,7 @@ export class CreateUserDto {
     example: 'Never give up',
   })
   @IsString()
+  @IsOptional()
   bio: string;
 
   @ApiProperty({
@@ -25,6 +26,7 @@ export class CreateUserDto {
     example: 18,
   })
   @IsNumber()
+  @IsOptional()
   age: number
 
   @ApiProperty({
@@ -41,6 +43,7 @@ export class CreateUserDto {
     example: "Samarkand",
   })
   @IsString()
+  @IsOptional()
   location: string
 
   @ApiProperty({
@@ -74,5 +77,5 @@ export class CreateUserDto {
     required: false,
   })
   @IsOptional()
-  image?: Express.Multer.File;  
+  image?: Express.Multer.File;
 }

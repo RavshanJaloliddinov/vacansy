@@ -19,7 +19,7 @@ export class ContributionService {
   }
 
   async findAll(user: UserEntity) {
-    const contributions = await this.contributionRepo.find({ where: { user } });
+    const contributions = await this.contributionRepo.find({ where: { user, is_deleted: false } });
     return { status: 200, data: contributions, message: 'Contributions fetched successfully' };
   }
 

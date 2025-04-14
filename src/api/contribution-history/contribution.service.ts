@@ -42,7 +42,13 @@ export class ContributionService {
     const contribution = await this.contributionRepo.findOne({ where: { id, user } });
     if (!contribution) throw new NotFoundException('Contribution not found');
 
-    await this.contributionRepo.softRemove(contribution);
+
+    contribution.deleted_at = new Date();
+    contribution.deleted_by = user.id;
+    contribution.is_deleted = true;
+
+    await this.contributionRepo.save(contribution)
     return { status: 200, data: null, message: 'Contribution successfully soft-deleted' };
+
   }
 }

@@ -24,7 +24,7 @@ export class UpdateUserDto {
 
   @ApiProperty({
     description: 'Gender of the user',
-    type: Enumerator,
+    type: String,
     example: 18,
   })
   @IsEnum(Gender)

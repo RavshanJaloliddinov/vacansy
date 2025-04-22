@@ -1,6 +1,7 @@
 import { IsString, IsEmail, IsEnum, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Gender, UserRoles } from 'src/common/database/Enum';
+import { Transform } from 'class-transformer';
 
 export class UpdateUserDto {
   @ApiProperty({
@@ -17,6 +18,7 @@ export class UpdateUserDto {
     description: 'Age of the user',
     type: Number,
     example: 18,
+    required: false,
   })
   @IsNumber()
   @IsOptional()
@@ -26,6 +28,7 @@ export class UpdateUserDto {
     description: 'Gender of the user',
     type: String,
     example: 18,
+    required: false,
   })
   @IsEnum(Gender)
   @IsOptional()
@@ -35,6 +38,7 @@ export class UpdateUserDto {
     description: 'Location of the user',
     type: String,
     example: "Samarkand",
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -46,6 +50,7 @@ export class UpdateUserDto {
     example: 'johndoe@example.com',
     required: false,
   })
+  @Transform(({ value }) => value === '' ? undefined : value)
   @IsEmail()
   @IsOptional()
   email?: string;
@@ -74,6 +79,7 @@ export class UpdateUserDto {
     description: 'Bio of the user',
     type: String,
     example: 'Never give up',
+    required: false,
   })
   @IsString()
   @IsOptional()

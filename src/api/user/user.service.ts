@@ -126,7 +126,7 @@ export class UserService {
     }
   }
 
-  async updateProfile(id: string, updateUserDto: UpdateUserDto, currentUserId: string, imageFile: Express.Multer.File): Promise<any> {
+  async updateProfile(id: string, updateUserDto: UpdateUserDto, imageFile: Express.Multer.File): Promise<any> {
     try {
       const user = await this.userRepository.findOne({ where: { id, is_deleted: false } });
 
@@ -144,7 +144,7 @@ export class UserService {
         imageFileName = await this.fileService.saveFile(imageFile);
       }
 
-      await this.userRepository.update(id, { ...updateUserDto, role: user.role, image: imageFileName, updated_by: currentUserId });
+      await this.userRepository.update(id, { ...updateUserDto, role: user.role, image: imageFileName, updated_by: id });
 
       const updatedUser = await this.userRepository.findOne({ where: { id } });
 

@@ -31,6 +31,7 @@ export class UpdateUserDto {
     example: 18,
     required: false,
   })
+  @Transform(({ value }) => value === '' ? undefined : value)
   @IsEnum(Gender)
   @IsOptional()
   gender: Gender
@@ -72,6 +73,7 @@ export class UpdateUserDto {
     example: UserRoles.ADMIN,
     required: false,
   })
+  @Transform(({ value }) => value === '' ? undefined : value)
   @IsEnum(UserRoles)
   @IsOptional()
   role?: UserRoles;

@@ -22,6 +22,7 @@ export class UpdateUserDto {
   })
   @IsNumber()
   @IsOptional()
+  @Transform(({ value }) => value ? parseInt(value, 10) : undefined)
   age: number
 
   @ApiProperty({
